@@ -1,262 +1,209 @@
-var nodeName = null;
-var selectedPeer = null;
-var shortWait = 500;
-var longWait = 5000;
+//our username
+var name;
+var connectedUser;
 
-function getMessages() {
-    $.get("/message", function (data) {
-        $("#msg-container").empty();
-        $("#msg-container-private").empty();
-        for (var i in data["Messages"]) {
-            var x = encodeURI(data["Messages"][i]["Origin"]) === nodeName ? "sender" : "receiver";
-            //var t = encodeURI(data["Messages"][i]["Text"]);
-            var t = data["Messages"][i]["Text"];
-            $("#msg-container").append("" +
-                "<div class=\"row message-body\">" +
-                "    <div class=\"col-sm-12 message-main-" + x + "\">" +
-                "        <div class=\"" + x + "\">" +
-                "            <div class=\"message-text\">" + t + "</div>" +
-                "            <span class=\"message-time pull-right\">" + encodeURI(data["Messages"][i]["Origin"]) + "</span>" +
-                "        </div>" +
-                "    </div>" +
-                "</div>");
-        }
-        for (var user in data["PrivateMessages"]) {
-            $("#msg-container-" + user).empty();
-            for (var message in data["PrivateMessages"][user]) {
-                var x1 = encodeURI(data["PrivateMessages"][user][message]["Origin"]) === user ? "receiver" : "sender";
-                //var t1 = encodeURI(data["PrivateMessages"][user][message]["Text"]);
-                var t1 = data["PrivateMessages"][user][message]["Text"];
-                $("#msg-container-" + user).append("" +
-                    "<div class=\"row message-body\">" +
-                    "    <div class=\"col-sm-12 message-main-\"" + x1 + ">" +
-                    "        <div class=\"" + x1 + "\">" +
-                    "            <div class=\"message-text\">" + t1 + "</div>" +
-                    "            <span class=\"message-time pull-right\">" + encodeURI(data["PrivateMessages"][user][message]["Origin"]) + "</span>" +
-                    "        </div>" +
-                    "    </div>" +
-                    "</div>");
-            }
-        }
-    });
-}
+//connecting to our signaling server
+var conn = new WebSocket('ws://192.168.2.188:9090');
 
-function sendMessage() {
-    $.post({
-        url: "/message",
-        data: {"Message": $("#comment").val()},
-        success: function () {
-            $("#comment").val("");
-        }
-    });
-}
+conn.onopen = function () {
+    console.log("Connected to the signaling server");
+};
 
-function sendPrivateMessage() {
-    if (selectedPeer) {
-        $.post("/message", {Message: $("#comment-" + selectedPeer).val(), Dest: selectedPeer})
-            .done(function () {
-                $(".comment-private").val("");
-            });
+//when we got a message from a signaling server
+conn.onmessage = function (msg) {
+    console.log("Got message", msg.data);
+
+    var data = JSON.parse(msg.data);
+
+    switch(data.type) {
+        case "login":
+            handleLogin(data.success);
+            break;
+        //when somebody wants to call us
+        case "offer":
+            handleOffer(data.offer, data.name);
+            break;
+        case "answer":
+            handleAnswer(data.answer);
+            break;
+        //when a remote peer sends an ice candidate to us
+        case "candidate":
+            handleCandidate(data.candidate);
+            break;
+        case "leave":
+            handleLeave();
+            break;
+        default:
+            break;
+    }
+};
+
+conn.onerror = function (err) {
+    console.log("Got error", err);
+};
+
+//alias for sending JSON encoded messages
+function send(message) {
+    //attach the other peer username to our messages
+    if (connectedUser) {
+        message.name = connectedUser;
     }
 
-}
+    conn.send(JSON.stringify(message));
+};
 
-function sendNewPeer() {
-    $.post({
-        url: "/node",
-        data: {"Address": $("#searchText").val()},
-        success: function () {
-            $("#searchText").val("");
-            getPeers();
-        }
-    });
-}
+//******
+//UI selectors block
+//******
 
-function getPeers() {
-    $.get("/node", function (data) {
-        $("#peerList").empty();
-        for (var i in data["Peers"]) {
-            $("#peerList").append("" +
-                "<div class=\"row sideBar-body\">" +
-                "   <div class=\"col-sm-12 col-xs-12 sideBar-main\">" +
-                "       <div class=\"row\">" +
-                "           <div class=\"col-sm-12 col-xs-12 sideBar-name\">" +
-                "               <span class=\"name-meta\">" + encodeURI(data["Peers"][i]) + "</span>" +
-                "           </div>" +
-                "       </div>" +
-                "   </div>" +
-                "</div>");
-        }
-        $("#hopList").empty();
-        for (var i in data["Hops"]) {
-            var user = encodeURI(data["Hops"][i]);
-            var extraClass = (selectedPeer === user) ? "sideBar-selected" : "";
-            $("#hopList").append("" +
-                "<div class=\"row sideBar-body " + extraClass + "\" id=\"peer-selector-" + user + "\">" +
-                "   <div class=\"col-sm-12 col-xs-12 sideBar-main\">" +
-                "       <div class=\"row\">" +
-                "           <div class=\"col-sm-8 col-xs-8 sideBar-name\">" +
-                "               <span class=\"name-meta\" id=\"peer-selector-" + user + "\">" + user + "</span>" +
-                "           </div>" +
-                "       </div>" +
-                "   </div>" +
-                "</div>");
-            if (!$("#" + user + "-conversation-box").length) {
-                $("#conversation-container").append("" +
-                    "<div id=\"" + user + "-conversation-box\" class=\"conversation-box-container\" style=\"display: none;\">" +
-                    "   <div class=\"row message\" id=\"conversation-" + user + "\">" +
-                    "       <div class=\"row message-previous\">" +
-                    "           <div class=\"col-sm-12 previous\"></div>" +
-                    "       </div>" +
-                    "       <span id=\"msg-container-" + user + "\"></span>" +
-                    "   </div>" +
-                    "   <div class=\"row reply\">" +
-                    "       <div class=\"col-sm-11 col-xs-11 reply-main\">" +
-                    "           <textarea class=\"form-control comment-private\" rows=\"1\" id=\"comment-" + user + "\"></textarea>" +
-                    "       </div>" +
-                    "       <div class=\"col-sm-1 col-xs-1 reply-send\">" +
-                    "           <i id=\"reply-send-act-" + user + "\" class=\"fa fa-send fa-2x reply-send-act-private\" aria-hidden=\"true\"></i>" +
-                    "       </div>" +
-                    "   </div>" +
-                    "</div>");
-            }
-        }
-    });
-}
+var loginPage = document.querySelector('#loginPage');
+var usernameInput = document.querySelector('#usernameInput');
+var loginBtn = document.querySelector('#loginBtn');
 
-function getId() {
-    $.get("/id", function (data) {
-        nodeName = data["Id"];
-        $('#node-name-span').text(nodeName);
-    });
-}
+var callPage = document.querySelector('#callPage');
+var callToUsernameInput = document.querySelector('#callToUsernameInput');
+var callBtn = document.querySelector('#callBtn');
 
-$(document).ready(function () {
-    getId();
-    getPeers();
-    setInterval(getPeers, longWait);
-    setInterval(getMessages, shortWait);
+var hangUpBtn = document.querySelector('#hangUpBtn');
 
-    $("#reply-send-act").click(sendMessage);
-    $("#comment").keypress(function (e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+var localVideo = document.querySelector('#localVideo');
+var remoteVideo = document.querySelector('#remoteVideo');
 
-    $(document.body).on('click', '.reply-send-act-private', sendPrivateMessage);
-    $(document.body).on('keypress', '.comment-private', function (e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            sendPrivateMessage();
-        }
-    });
+var yourConn;
+var stream;
 
-    $("#new-peer-submit").click(function (e) {
-        e.preventDefault();
-        sendNewPeer();
-    });
-    $("#searchText").keyup(function (e) {
-        if (e.which === 13) {
-            e.preventDefault();
-            sendNewPeer();
-        }
-    });
+callPage.style.display = "none";
 
-    $("#edit-id-launcher").click(function (e) {
-        e.preventDefault();
-        var newId = prompt("Please enter the new node name");
-        if (newId) {
-            $.post({
-                url: "/id",
-                data: {"Id": newId},
-                success: function () {
-                    getId();
-                }
-            });
-        }
-    });
+// Login when the user clicks the button
+loginBtn.addEventListener("click", function (event) {
+    name = usernameInput.value;
 
-    $("#file-input-launcher").click(function (e) {
-        e.preventDefault();
-        $('#file-input').trigger('click');
-    });
-
-    $("#file-input").change(function () {
-        var fullPath = document.getElementById('file-input').value;
-        if (fullPath) {
-            var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
-            var filename = fullPath.substring(startIndex);
-            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
-                filename = filename.substring(1);
-            }
-            $.post({
-                url: "/file",
-                data: {"Path": filename},
-                success: function () {
-                    alert("File uploaded");
-                }
-            });
-        }
-    });
-
-    $("#reqDownloadForm").submit(function (e) {
-        e.preventDefault();
-        $.post({
-            url: "/download",
-            data: {
-                "Destination": $("#nodeNameDown").val(),
-                "FileName": $("#filenameDown").val(),
-                "HashValue": $("#hashValueDown").val()
-            },
-            success: function () {
-                alert("Download requested");
-            }
+    if (name.length > 0) {
+        send({
+            type: "login",
+            name: name
         });
-        $("#downloadModal").modal("toggle");
-        $(this)[0].reset();
-    });
-
-    $("#searchDownloadForm").submit(function (e) {
-        e.preventDefault();
-        $.post({
-            url: "/search",
-            data: {
-                "Keywords": $("#keywordSearch").val(),
-                "Budget": $("#budgetSearch").val()
-            },
-            success: function () {
-                alert("Search requested");
-            }
-        });
-        $("#searchModal").modal("toggle");
-        $(this)[0].reset();
-    });
-
-    $(document.body).on('click', '.heading-compose', function () {
-        $(".side-two").css({
-            "left": "0"
-        });
-        $("#public-conversation-box").hide();
-        $("#private-conversation-box").show();
-    });
-
-    $(document.body).on('click', '.newMessage-back', function () {
-        $(".side-two").css({
-            "left": "-100%"
-        });
-        $("#private-conversation-box").hide();
-        $("#public-conversation-box").show();
-    });
-
-    $(document.body).on('click', '.sideBar-body', function () {
-        $(".sideBar-body").removeClass("sideBar-selected");
-        $(this).addClass("sideBar-selected");
-        var user = $(this).attr('id').slice(14);
-        selectedPeer = user;
-        $(".conversation-box-container").hide();
-        $("#" + user + "-conversation-box").show();
-    });
+    }
 
 });
+
+function handleLogin(success) {
+    if (success === false) {
+        alert("Ooops...try a different username");
+    } else {
+        loginPage.style.display = "none";
+        callPage.style.display = "block";
+
+        //**********************
+        //Starting a peer connection
+        //**********************
+
+        //getting local video stream
+        navigator.webkitGetUserMedia({ video: true, audio: true }, function (myStream) {
+            stream = myStream;
+
+            //displaying local video stream on the page
+            localVideo.src = window.URL.createObjectURL(stream);
+
+            //using Google public stun server
+            var configuration = {
+                "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
+            };
+
+            yourConn = new webkitRTCPeerConnection(configuration);
+
+            // setup stream listening
+            yourConn.addStream(stream);
+
+            //when a remote user adds stream to the peer connection, we display it
+            yourConn.onaddstream = function (e) {
+                remoteVideo.src = window.URL.createObjectURL(e.stream);
+            };
+
+            // Setup ice handling
+            yourConn.onicecandidate = function (event) {
+                if (event.candidate) {
+                    send({
+                        type: "candidate",
+                        candidate: event.candidate
+                    });
+                }
+            };
+
+        }, function (error) {
+            console.log(error);
+        });
+
+    }
+};
+
+//initiating a call
+callBtn.addEventListener("click", function () {
+    var callToUsername = callToUsernameInput.value;
+
+    if (callToUsername.length > 0) {
+
+        connectedUser = callToUsername;
+
+        // create an offer
+        yourConn.createOffer(function (offer) {
+            send({
+                type: "offer",
+                offer: offer
+            });
+
+            yourConn.setLocalDescription(offer);
+        }, function (error) {
+            alert("Error when creating an offer");
+        });
+
+    }
+});
+
+//when somebody sends us an offer
+function handleOffer(offer, name) {
+    connectedUser = name;
+    yourConn.setRemoteDescription(new RTCSessionDescription(offer));
+
+    //create an answer to an offer
+    yourConn.createAnswer(function (answer) {
+        yourConn.setLocalDescription(answer);
+
+        send({
+            type: "answer",
+            answer: answer
+        });
+
+    }, function (error) {
+        alert("Error when creating an answer");
+    });
+};
+
+//when we got an answer from a remote user
+function handleAnswer(answer) {
+    yourConn.setRemoteDescription(new RTCSessionDescription(answer));
+};
+
+//when we got an ice candidate from a remote user
+function handleCandidate(candidate) {
+    yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+};
+
+//hang up
+hangUpBtn.addEventListener("click", function () {
+
+    send({
+        type: "leave"
+    });
+
+    handleLeave();
+});
+
+function handleLeave() {
+    connectedUser = null;
+    remoteVideo.src = null;
+
+    yourConn.close();
+    yourConn.onicecandidate = null;
+    yourConn.onaddstream = null;
+};

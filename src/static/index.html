@@ -1,170 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <title>Peerster</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>WebRTC Video Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
+<style>
+
+    body {
+        background: #eee;
+        padding: 5% 0;
+    }
+
+    video {
+        background: black;
+        border: 1px solid gray;
+    }
+
+    .call-page {
+        position: relative;
+        display: block;
+        margin: 0 auto;
+        width: 500px;
+        height: 500px;
+    }
+
+    #localVideo {
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+    #remoteVideo {
+        width: 500px;
+        height: 500px;
+    }
+
+</style>
+
 <body>
-<div class="container app">
-    <div class="row app-one">
 
-        <div class="col-sm-3 side">
-            <div class="side-one">
-                <div class="row heading">
-                    <div class="col-sm-2 col-xs-2 heading-compose pull-right">
-                        <i class="fa fa-comments fa-2x  pull-right" aria-hidden="true"></i>
-                    </div>
-                </div>
+<div id="loginPage" class="container text-center">
 
-                <div class="row searchBox">
-                    <div class="col-xs-9 searchBox-inner">
-                        <div class="form-group has-feedback">
-                            <input id="searchText" type="text" class="form-control" name="searchText"
-                                   placeholder="New Peer Address">
-                        </div>
-                    </div>
-                    <div class="col-xs-3 searchBox-inner">
-                        <div class="form-group has-feedback">
-                            <button type="button" class="btn btn-default" id="new-peer-submit">Add</button>
-                        </div>
-                    </div>
-                </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
 
-                <div class="row sideBar" id="peerList"></div>
-            </div>
+            <h2>WebRTC Video Demo. Please sign in</h2>
+            <label for="usernameInput" class="sr-only">Login</label>
+            <input type="email" id="usernameInput" c
+                   lass="form-control formgroup" placeholder="Login"
+                   required="" autofocus="">
+            <button id="loginBtn" class="btn btn-lg btn-primary btnblock">
+                Sign in
+            </button>
 
-            <div class="side-two">
-                <div class="row newMessage-heading">
-                    <div class="row newMessage-main">
-                        <div class="col-sm-2 col-xs-2 newMessage-back">
-                            <i class="fa fa-arrow-left" aria-hidden="true"></i>
-                        </div>
-                        <div class="col-sm-10 col-xs-10 newMessage-title">New Chat</div>
-                    </div>
-                </div>
-
-                <div class="row composeBox">
-                    <div class="col-sm-12 composeBox-inner">
-                        <div class="form-group has-feedback">
-                            <input id="composeText" type="text" class="form-control" name="searchText"
-                                   placeholder="Search People">
-                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row compose-sideBar" id="hopList"></div>
-            </div>
-        </div>
-
-        <div class="col-sm-9 conversation">
-            <div class="row heading">
-                <div class="col-sm-8 col-xs-7 heading-name">
-                    <span class="heading-name-meta">Node name <span id="node-name-span"></span></span>
-                </div>
-                <div class="col-sm-1 col-xs-1 heading-dot pull-right">
-                    <i class="fa fa-pencil fa-2x pull-right" aria-hidden="true" id="edit-id-launcher"></i>
-                </div>
-            </div>
-
-            <div id="conversation-container">
-                <div id="public-conversation-box" class="conversation-box-container">
-                    <div class="row message" id="conversation">
-
-                        <div class="row message-previous">
-                            <div class="col-sm-12 previous"></div>
-                        </div>
-
-                        <span id="msg-container"></span>
-                    </div>
-
-                    <div class="row reply">
-                        <div class="col-sm-8 col-xs-8 reply-main">
-                            <textarea class="form-control" rows="1" id="comment"></textarea>
-                        </div>
-                        <div class="col-sm-1 col-xs-1 reply-send">
-                            <i id="reply-send-act" class="fa fa-send fa-2x"></i>
-                        </div>
-                        <div class="col-sm-1 col-xs-1 reply-send">
-                            <i class="fa fa-plus fa-2x" aria-hidden="true" id="file-input-launcher"></i>
-                            <input id="file-input" type="file" name="name" style="display: none;"/>
-                        </div>
-                        <div class="col-sm-1 col-xs-1 reply-send">
-                            <i id="file-download" class="fa fa-cloud-download fa-2x" data-toggle="modal"
-                               data-target="#downloadModal"></i>
-                        </div>
-                        <div class="col-sm-1 col-xs-1 reply-send">
-                            <i id="file-search" class="fa fa-search fa-2x" data-toggle="modal"
-                               data-target="#searchModal"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
+
 </div>
 
-<div class="modal fade" id="downloadModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Request download</h4>
-            </div>
-            <form id="reqDownloadForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="nodeNameDown" placeholder="Node Name">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="filenameDown" placeholder="File Name">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="hashValueDown" placeholder="Hash Value">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Download</button>
-                </div>
-            </form>
+<div id="callPage" class="call-page">
+    <video id="localVideo" autoplay></video>
+    <video id="remoteVideo" autoplay></video>
+
+    <div class="row text-center">
+        <div class="col-md-12">
+            <input id="callToUsernameInput" type="text"
+                   placeholder="username to call"/>
+            <button id="callBtn" class="btn-success btn">Call</button>
+            <button id="hangUpBtn" class="btn-danger btn">Hang Up</button>
         </div>
     </div>
+
 </div>
 
-<div class="modal fade" id="searchModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Search file</h4>
-            </div>
-            <form id="searchDownloadForm">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="keywordSearch" placeholder="Keywords">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="budgetSearch" placeholder="Budget">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="js/index.js"></script>
+
 </body>
+
 </html>
