@@ -6,10 +6,10 @@ import (
 	"strings"
 	"net"
 	"strconv"
-	"github.com/pauarge/peerster/gossiper/common"
 	"sort"
 	"log"
 	"fmt"
+	"github.com/pauarge/decWebRTC/src/common"
 )
 
 func check(e error) {

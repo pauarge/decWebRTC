@@ -2,42 +2,12 @@ package gossiperServer
 
 import (
 	"sync"
-	"github.com/pauarge/peerster/gossiper/common"
 	"log"
-	"github.com/dedis/protobuf"
 	"time"
 	"net"
+	"github.com/pauarge/decWebRTC/src/common"
+	"github.com/dedis/protobuf"
 )
-
-func (g *Gossiper) listenUI(wg sync.WaitGroup) {
-	defer wg.Done()
-	for {
-		var buf = make([]byte, common.BufferSize)
-		n, _, err := g.uiConn.ReadFromUDP(buf)
-		if err != nil {
-			log.Fatal(err)
-		}
-		m := common.PrivateMessage{}
-		err = protobuf.Decode(buf[0:n], &m)
-		if err == nil {
-			go g.HandlePrivateMessageClient(m)
-		} else {
-			m := common.DataRequest{}
-			err := protobuf.Decode(buf[0:n], &m)
-			if err == nil {
-				go g.HandleDataRequestClient(m)
-			} else {
-				m := common.PeerMessage{}
-				err := protobuf.Decode(buf[0:n], &m)
-				if err == nil {
-					go g.HandlePeerMessage(m)
-				} else {
-					log.Println(err)
-				}
-			}
-		}
-	}
-}
 
 func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
 	defer wg.Done()
@@ -59,14 +29,6 @@ func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
 				go g.handlePrivateMessage(*m.Private)
 			} else if m.Status != nil {
 				go g.handleStatusPacket(*m.Status, relay)
-			} else if m.DataRequest != nil {
-				go g.handleDataRequest(*m.DataRequest, relay)
-			} else if m.DataReply != nil {
-				go g.handleDataReply(*m.DataReply, relay)
-			} else if m.SearchRequest != nil {
-				go g.handleSearchRequest(*m.SearchRequest, relay)
-			} else if m.SearchReply != nil {
-				go g.handleSearchReply(*m.SearchReply, relay)
 			}
 		} else {
 			log.Println(err)
@@ -102,17 +64,4 @@ func (g *Gossiper) routeRumorGenerator(wg sync.WaitGroup, rtimer int) {
 		msg := g.createRouteRumor()
 		g.iterativeRumorMongering("", msg)
 	}
-}
-
-func (g *Gossiper) GetMessages(ch chan common.MessageList) {
-	defer g.PrivateMessagesLock.RUnlock()
-	defer g.MessagesLock.RUnlock()
-	g.MessagesLock.RLock()
-	g.PrivateMessagesLock.RLock()
-	ml := common.MessageList{}
-	for i := range g.MsgOrder {
-		ml.Messages = append(ml.Messages, g.Messages[g.MsgOrder[i]])
-	}
-	ml.PrivateMessages = g.PrivateMessages
-	ch <- ml
 }

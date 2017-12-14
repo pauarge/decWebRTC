@@ -1,12 +1,12 @@
 package gossiperServer
 
 import (
-	"github.com/pauarge/peerster/gossiper/common"
 	"net"
 	"fmt"
-	"github.com/dedis/protobuf"
 	"log"
 	"time"
+	"github.com/dedis/protobuf"
+	"github.com/pauarge/decWebRTC/src/common"
 )
 
 func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
@@ -35,36 +35,6 @@ func (g *Gossiper) sendPrivateMessage(dest string, p common.GossipPacket) {
 		if err != nil {
 			log.Fatal(err)
 		}
-	}
-}
-
-func (g *Gossiper) sendDataRequest(dest string, p common.GossipPacket, retries int) {
-	if retries > 0 {
-		g.dataRequestsLock.Lock()
-		g.dataRequests[dest] = make(chan bool)
-		g.dataRequestsLock.Unlock()
-		g.sendPrivateMessage(dest, p)
-		ticker := time.NewTicker(time.Second * common.LongTimeOutSecs)
-		go func() {
-			for range ticker.C {
-				g.channelsLock.Lock()
-				if ch, ok := g.channels[dest]; ok {
-					ch <- true
-					g.sendDataRequest(dest, p, retries-1)
-					fmt.Println("RETRYING DATA REQUEST")
-				}
-				g.channelsLock.Unlock()
-				return
-			}
-		}()
-		g.dataRequestsLock.RLock()
-		ch := g.dataRequests[dest]
-		g.dataRequestsLock.RUnlock()
-		_ = <-ch
-		ticker.Stop()
-		g.dataRequestsLock.Lock()
-		delete(g.dataRequests, dest)
-		g.dataRequestsLock.Unlock()
 	}
 }
 

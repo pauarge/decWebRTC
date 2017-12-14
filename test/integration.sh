@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. ./test_lib.sh
+. test_lib.sh
 
 cd ..
 go build -race

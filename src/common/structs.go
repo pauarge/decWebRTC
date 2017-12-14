@@ -9,17 +9,7 @@ type MapKey struct {
 	MessageId uint32
 }
 
-type MapKeySearchRequest struct {
-	Origin   string
-	Keywords string
-}
-
 // Messages
-
-type PeerMessage struct {
-	Id   uint32
-	Text string
-}
 
 type RumorMessage struct {
 	Origin   string
@@ -37,42 +27,6 @@ type PrivateMessage struct {
 	Text        string
 }
 
-type DataRequest struct {
-	Origin      string
-	Destination string
-	HopLimit    uint32
-	FileName    string
-	HashValue   []byte
-}
-
-type DataReply struct {
-	Origin      string
-	Destination string
-	HopLimit    uint32
-	FileName    string
-	HashValue   []byte
-	Data        []byte
-}
-
-type SearchRequest struct {
-	Origin   string
-	Budget   uint64
-	Keywords []string
-}
-
-type SearchReply struct {
-	Origin      string
-	Destination string
-	HopLimit    uint32
-	Results     []*SearchResult
-}
-
-type SearchResult struct {
-	FileName     string
-	MetafileHash []byte
-	ChunkMap     []uint64
-}
-
 type PeerStatus struct {
 	Identifier string
 	NextId     uint32
@@ -83,18 +37,9 @@ type StatusPacket struct {
 }
 
 type GossipPacket struct {
-	Rumor         *RumorMessage
-	Status        *StatusPacket
-	Private       *PrivateMessage
-	DataRequest   *DataRequest
-	DataReply     *DataReply
-	SearchRequest *SearchRequest
-	SearchReply   *SearchReply
-}
-
-type MessageList struct {
-	Messages        []RumorMessage
-	PrivateMessages map[string][]PrivateMessage
+	Rumor   *RumorMessage
+	Status  *StatusPacket
+	Private *PrivateMessage
 }
 
 // GUI Server Responses
@@ -126,12 +71,4 @@ func (a PeerStatusList) Less(i, j int) bool {
 		return false
 	}
 	return a[i].NextId < a[j].NextId
-}
-
-// File storage
-
-type StoredFile struct {
-	Size     int64
-	Metafile []byte
-	Metahash []byte
 }

@@ -5,32 +5,8 @@ import (
 	"encoding/json"
 	"strings"
 	"sort"
-	"github.com/pauarge/peerster/gossiper/common"
-	"encoding/hex"
-	"log"
+	"github.com/pauarge/decWebRTC/src/common"
 )
-
-func (s *Server) messageHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if r.Method == "POST" {
-		r.ParseForm()
-		if r.Form["Destination"] != nil {
-			text := strings.Join(r.Form["Message"], "")
-			dest := strings.Join(r.Form["Destination"], "")
-			go s.gossiper.HandlePrivateMessageClient(common.PrivateMessage{Destination: dest, Text: text})
-		} else {
-			go s.gossiper.HandlePeerMessage(common.PeerMessage{Text: strings.Join(r.Form["Message"], "")})
-		}
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(common.StatusResponse{"message sent"})
-	} else {
-		ch := make(chan common.MessageList)
-		go s.gossiper.GetMessages(ch)
-		ml := <-ch
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(ml)
-	}
-}
 
 func (s *Server) nodeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -74,46 +50,5 @@ func (s *Server) idHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(common.IdResponse{s.gossiper.Name})
-	}
-}
-
-func (s *Server) fileHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if r.Method == "POST" {
-		r.ParseForm()
-		path := strings.Join(r.Form["Path"], "")
-		go s.gossiper.HandleFileUpload(path)
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(common.StatusResponse{"file uploaded"})
-	}
-}
-
-func (s *Server) downloadHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if r.Method == "POST" {
-		r.ParseForm()
-		node := strings.Join(r.Form["Destination"], "")
-		filename := strings.Join(r.Form["FileName"], "")
-		hash := strings.Join(r.Form["HashValue"], "")
-		h, err := hex.DecodeString(hash)
-		if err != nil {
-			log.Fatal(err)
-		}
-		msg := common.DataRequest{Destination: node, FileName: filename, HashValue: h}
-		go s.gossiper.HandleDataRequestClient(msg)
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(common.StatusResponse{"file requested"})
-	}
-}
-
-func (s *Server) searchHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if r.Method == "POST" {
-		r.ParseForm()
-		keywords := strings.Join(r.Form["Keywords"], "")
-		budget := strings.Join(r.Form["Budget"], "")
-		go s.gossiper.HandleKeywords(keywords, budget)
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(common.StatusResponse{"search requested"})
 	}
 }

@@ -1,11 +1,11 @@
 package guiServer
 
 import (
-	"github.com/pauarge/peerster/gossiper/common"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"github.com/pauarge/peerster/gossiper/gossiperServer"
+	"github.com/gorilla/mux"
+	"github.com/pauarge/decWebRTC/src/common"
+	"github.com/pauarge/decWebRTC/src/gossiperServer"
 )
 
 type Server struct {
@@ -21,12 +21,8 @@ func NewServer(g *gossiperServer.Gossiper) *Server {
 }
 
 func (s *Server) Start() {
-	s.router.HandleFunc("/download", s.downloadHandler)
-	s.router.HandleFunc("/file", s.fileHandler)
 	s.router.HandleFunc("/id", s.idHandler)
-	s.router.HandleFunc("/message", s.messageHandler)
 	s.router.HandleFunc("/node", s.nodeHandler)
-	s.router.HandleFunc("/search", s.searchHandler)
 	s.router.PathPrefix("/").Handler(http.FileServer(http.Dir("static/")))
 
 	http.Handle("/", s.router)
