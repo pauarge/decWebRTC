@@ -68,25 +68,14 @@ func (g *Gossiper) encodeWant() common.StatusPacket {
 
 func (g *Gossiper) getPeerList(exclude string) []string {
 	defer g.PeersLock.RUnlock()
-	defer g.NextHopLock.RUnlock()
 	g.PeersLock.RLock()
-	g.NextHopLock.RLock()
 
-	fmt.Print("PEERS ")
 	var p []string
 	for i := range g.Peers {
-		//fmt.Print(i + ",")
 		if i != exclude {
 			p = append(p, i)
 		}
 	}
-	fmt.Println()
-
-	fmt.Print("DSDV ")
-	for k, v := range g.NextHop {
-		fmt.Print(k + ": " + v.String() + " ")
-	}
-	fmt.Println()
 	return p
 }
 

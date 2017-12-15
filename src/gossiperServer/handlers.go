@@ -22,9 +22,7 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	synced := true
 	var dest common.MapKey
 
-	statusStr := "STATUS from " + relayStr + " |"
 	for i := range remoteWant {
-		statusStr += " origin " + i + " nextID " + strconv.Itoa(int(remoteWant[i]))
 		if remoteWant[i] > localWant[i] {
 			synced = false
 		} else if remoteWant[i] < localWant[i] {
@@ -46,15 +44,12 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	}
 	g.wantLock.RUnlock()
 
-	fmt.Println(statusStr)
 	if dest != (common.MapKey{}) {
 		g.MessagesLock.RLock()
 		msg := g.Messages[dest]
 		g.MessagesLock.RUnlock()
 		g.rumorMongering(relayStr, msg)
-	} else if synced {
-		fmt.Println("IN SYNC WITH " + relayStr)
-	} else {
+	} else if !synced {
 		g.sendStatusPacket(relay)
 	}
 }
@@ -73,11 +68,7 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 			g.PeersLock.Lock()
 			g.Peers[msg.LastIP.String()+":"+strconv.Itoa(*msg.LastPort)] = true
 			g.PeersLock.Unlock()
-		} else {
-			fmt.Println("DIRECT-ROUTE FOR " + msg.Origin + ": " + getRelayStr(relay))
 		}
-
-		fmt.Println("ROUTE MESSAGE from " + getRelayStr(relay))
 
 		g.wantLock.Lock()
 		g.want[msg.Origin] = msg.Id + 1
@@ -105,7 +96,6 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 		g.PrivateMessagesLock.Lock()
 		g.PrivateMessages[msg.Origin] = append(g.PrivateMessages[msg.Origin], msg)
 		g.PrivateMessagesLock.Unlock()
-		fmt.Println("PRIVATE: " + msg.Origin + ":" + strconv.Itoa(int(msg.HopLimit)))
 	} else if msg.HopLimit > 0 {
 		p := common.GossipPacket{Private: &msg}
 		g.sendPrivateMessage(msg.Destination, p)
