@@ -6,7 +6,55 @@ import (
 	"strings"
 	"sort"
 	"github.com/pauarge/decWebRTC/src/common"
+	"github.com/gorilla/websocket"
+	"log"
 )
+
+var upgrader = websocket.Upgrader{}
+
+func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+
+		var data common.JSONRequest
+		err = json.Unmarshal(message, &data)
+		if err != nil {
+			log.Println(err)
+			break
+		}
+
+		switch data.Type {
+		case "login":
+			log.Println("USER LOGGED " + data.Name)
+		case "offer":
+			log.Println("Received an offer")
+		case "answer":
+			log.Println("Received an answer")
+		case "candidate":
+			log.Println("Received a candidate")
+		case "leave":
+			log.Println("Received a leave")
+		default:
+			log.Println("Did not understand the command")
+		}
+
+		err = c.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+}
 
 func (s *Server) nodeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")

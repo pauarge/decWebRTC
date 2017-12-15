@@ -1,7 +1,6 @@
 package gossiperServer
 
 import (
-	"fmt"
 	"net"
 	"strconv"
 	"github.com/pauarge/decWebRTC/src/common"

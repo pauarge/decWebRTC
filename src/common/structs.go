@@ -40,6 +40,15 @@ type GossipPacket struct {
 	Private *PrivateMessage
 }
 
+// GUI Server Requests
+
+type JSONRequest struct {
+	Type      string
+	Name      string
+	Offer     string
+	Candidate string
+}
+
 // GUI Server Responses
 
 type StatusResponse struct {

@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"sort"
 	"log"
-	"fmt"
 	"github.com/pauarge/decWebRTC/src/common"
 )
 

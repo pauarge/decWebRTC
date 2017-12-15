@@ -3,7 +3,7 @@ var name;
 var connectedUser;
 
 //connecting to our signaling server
-var conn = new WebSocket('ws://192.168.2.188:9090');
+var conn = new WebSocket('ws://127.0.0.1:8080/echo');
 
 conn.onopen = function () {
     console.log("Connected to the signaling server");
@@ -50,7 +50,7 @@ function send(message) {
     }
 
     conn.send(JSON.stringify(message));
-};
+}
 
 //******
 //UI selectors block
@@ -99,7 +99,7 @@ function handleLogin(success) {
         //**********************
 
         //getting local video stream
-        navigator.webkitGetUserMedia({ video: true, audio: true }, function (myStream) {
+        navigator.webkitGetUserMedia({ video: true, audio: false }, function (myStream) {
             stream = myStream;
 
             //displaying local video stream on the page
@@ -135,7 +135,7 @@ function handleLogin(success) {
         });
 
     }
-};
+}
 
 //initiating a call
 callBtn.addEventListener("click", function () {
@@ -177,25 +177,23 @@ function handleOffer(offer, name) {
     }, function (error) {
         alert("Error when creating an answer");
     });
-};
+}
 
 //when we got an answer from a remote user
 function handleAnswer(answer) {
     yourConn.setRemoteDescription(new RTCSessionDescription(answer));
-};
+}
 
 //when we got an ice candidate from a remote user
 function handleCandidate(candidate) {
     yourConn.addIceCandidate(new RTCIceCandidate(candidate));
-};
+}
 
 //hang up
 hangUpBtn.addEventListener("click", function () {
-
     send({
         type: "leave"
     });
-
     handleLeave();
 });
 
@@ -206,4 +204,4 @@ function handleLeave() {
     yourConn.close();
     yourConn.onicecandidate = null;
     yourConn.onaddstream = null;
-};
+}
