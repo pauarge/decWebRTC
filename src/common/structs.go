@@ -14,7 +14,6 @@ type MapKey struct {
 type RumorMessage struct {
 	Origin   string
 	Id       uint32
-	Text     string
 	LastIP   *net.IP
 	LastPort *int
 }
@@ -24,7 +23,6 @@ type PrivateMessage struct {
 	Destination string
 	HopLimit    uint32
 	Id          uint32
-	Text        string
 }
 
 type PeerStatus struct {

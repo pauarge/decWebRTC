@@ -12,12 +12,8 @@ cp -r peerster peerster_backup
 cd peerster
 rm .DS_Store
 rm gossiper/.DS_Store
-rm part1/.DS_Store
 rm -rf .git
 rm -rf .idea
-
-rm _Downloads/*.pdf
-rm _Downloads/*.txt
 
 cd ..
 

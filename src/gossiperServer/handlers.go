@@ -105,7 +105,7 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 		g.PrivateMessagesLock.Lock()
 		g.PrivateMessages[msg.Origin] = append(g.PrivateMessages[msg.Origin], msg)
 		g.PrivateMessagesLock.Unlock()
-		fmt.Println("PRIVATE: " + msg.Origin + ":" + strconv.Itoa(int(msg.HopLimit)) + ":" + msg.Text)
+		fmt.Println("PRIVATE: " + msg.Origin + ":" + strconv.Itoa(int(msg.HopLimit)))
 	} else if msg.HopLimit > 0 {
 		p := common.GossipPacket{Private: &msg}
 		g.sendPrivateMessage(msg.Destination, p)

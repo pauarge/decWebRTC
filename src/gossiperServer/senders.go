@@ -46,11 +46,7 @@ func (g *Gossiper) iterativeRumorMongering(exclude string, msg common.RumorMessa
 }
 
 func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
-	if msg.Text == "" {
-		fmt.Println("MONGERING ROUTE to " + address)
-	} else {
-		fmt.Println("MONGERING TEXT to " + address)
-	}
+	fmt.Println("MONGERING ROUTE to " + address)
 	p := common.GossipPacket{Rumor: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {

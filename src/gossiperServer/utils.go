@@ -12,25 +12,6 @@ import (
 	"github.com/pauarge/decWebRTC/src/common"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func split(buf []byte, lim int) [][]byte {
-	var chunk []byte
-	chunks := make([][]byte, 0, len(buf)/lim+1)
-	for len(buf) >= lim {
-		chunk, buf = buf[:lim], buf[lim:]
-		chunks = append(chunks, chunk)
-	}
-	if len(buf) > 0 {
-		chunks = append(chunks, buf[:len(buf)])
-	}
-	return chunks
-}
-
 func parsePeerSet(peers, gossipAddr string) map[string]bool {
 	peerSet := make(map[string]bool)
 	if last := len(peers) - 1; last >= 0 {
@@ -115,7 +96,7 @@ func (g *Gossiper) createRouteRumor() common.RumorMessage {
 	g.MessagesLock.Lock()
 	g.wantLock.Lock()
 
-	msg := common.RumorMessage{Origin: g.Name, Id: g.counter, Text: ""}
+	msg := common.RumorMessage{Origin: g.Name, Id: g.counter}
 	g.Messages[common.MapKey{Origin: g.Name, MessageId: g.counter}] = msg
 	g.counter += 1
 	g.want[g.Name] = g.counter
