@@ -22,8 +22,6 @@ func NewServer(g *gossiperServer.Gossiper) *Server {
 
 func (s *Server) Start() {
 	s.router.HandleFunc("/echo", s.echoHandler)
-	s.router.HandleFunc("/id", s.idHandler)
-	s.router.HandleFunc("/node", s.nodeHandler)
 	s.router.PathPrefix("/").Handler(http.FileServer(http.Dir("static/")))
 
 	http.Handle("/", s.router)

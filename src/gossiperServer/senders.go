@@ -22,13 +22,14 @@ func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
 	}
 }
 
-func (g *Gossiper) sendPrivateMessage(dest string, p common.GossipPacket) {
+func (g *Gossiper) SendPrivateMessage(msg common.PrivateMessage) {
+	p := common.GossipPacket{Private: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {
 		log.Fatal(err)
 	}
 	g.NextHopLock.RLock()
-	relay, ok := g.NextHop[dest]
+	relay, ok := g.NextHop[msg.Destination]
 	g.NextHopLock.RUnlock()
 	if ok {
 		g.gossipConn.WriteToUDP(packetBytes, relay)

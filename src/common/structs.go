@@ -2,6 +2,7 @@ package common
 
 import (
 	"net"
+	"encoding/json"
 )
 
 type MapKey struct {
@@ -22,7 +23,7 @@ type PrivateMessage struct {
 	Origin      string
 	Destination string
 	HopLimit    uint32
-	Id          uint32
+	Data		*json.RawMessage
 }
 
 type PeerStatus struct {
@@ -44,24 +45,10 @@ type GossipPacket struct {
 
 type JSONRequest struct {
 	Type      string
+	Success   bool
 	Name      string
-	Offer     string
-	Candidate string
-}
-
-// GUI Server Responses
-
-type StatusResponse struct {
-	Status string
-}
-
-type IdResponse struct {
-	Id string
-}
-
-type PeerListResponse struct {
-	Peers []string
-	Hops  []string
+	Offer     *json.RawMessage
+	Candidate *json.RawMessage
 }
 
 // PeerList sorting

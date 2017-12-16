@@ -92,11 +92,8 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 	msg.HopLimit -= 1
 	if msg.Destination == g.Name {
-		g.PrivateMessagesLock.Lock()
-		g.PrivateMessages[msg.Origin] = append(g.PrivateMessages[msg.Origin], msg)
-		g.PrivateMessagesLock.Unlock()
+		// TODO: Message processing (respond to offer, answer...)
 	} else if msg.HopLimit > 0 {
-		p := common.GossipPacket{Private: &msg}
-		g.sendPrivateMessage(msg.Destination, p)
+		g.SendPrivateMessage(msg)
 	}
 }
