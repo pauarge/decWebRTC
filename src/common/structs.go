@@ -23,7 +23,7 @@ type PrivateMessage struct {
 	Origin      string
 	Destination string
 	HopLimit    uint32
-	Data		*json.RawMessage
+	Data        *JSONRequest
 }
 
 type PeerStatus struct {
@@ -48,6 +48,7 @@ type JSONRequest struct {
 	Success   bool
 	Name      string
 	Offer     *json.RawMessage
+	Answer    *json.RawMessage
 	Candidate *json.RawMessage
 }
 

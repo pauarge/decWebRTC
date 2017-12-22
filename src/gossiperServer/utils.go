@@ -9,6 +9,7 @@ import (
 	"sort"
 	"log"
 	"github.com/pauarge/decWebRTC/src/common"
+	"github.com/pauarge/decWebRTC/src/guiServer"
 )
 
 func parsePeerSet(peers, gossipAddr string) map[string]bool {
@@ -89,4 +90,8 @@ func (g *Gossiper) createRouteRumor() common.RumorMessage {
 	g.counter += 1
 	g.want[g.Name] = g.counter
 	return msg
+}
+
+func (g *Gossiper) SetGuiServer(s *guiServer.Server) {
+	g.gui = s
 }

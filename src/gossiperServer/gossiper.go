@@ -6,22 +6,24 @@ import (
 	"log"
 	"sync"
 	"github.com/pauarge/decWebRTC/src/common"
+	"github.com/pauarge/decWebRTC/src/guiServer"
 )
 
 type Gossiper struct {
-	counter             uint32
-	Name                string
-	gossipConn          *net.UDPConn
-	channels            map[string]chan bool
-	Messages            map[common.MapKey]common.RumorMessage
-	NextHop             map[string]*net.UDPAddr
-	Peers               map[string]bool
-	want                map[string]uint32
-	channelsLock        *sync.RWMutex
-	MessagesLock        *sync.RWMutex
-	NextHopLock         *sync.RWMutex
-	PeersLock           *sync.RWMutex
-	wantLock            *sync.RWMutex
+	counter      uint32
+	Name         string
+	gossipConn   *net.UDPConn
+	channels     map[string]chan bool
+	Messages     map[common.MapKey]common.RumorMessage
+	NextHop      map[string]*net.UDPAddr
+	Peers        map[string]bool
+	want         map[string]uint32
+	channelsLock *sync.RWMutex
+	MessagesLock *sync.RWMutex
+	NextHopLock  *sync.RWMutex
+	PeersLock    *sync.RWMutex
+	wantLock     *sync.RWMutex
+	gui          *guiServer.Server
 }
 
 func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
@@ -34,19 +36,19 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 		log.Fatal(err)
 	}
 	return &Gossiper{
-		counter:             1,
-		Name:                name,
-		gossipConn:          gossipConn,
-		channels:            make(map[string]chan bool),
-		Messages:            make(map[common.MapKey]common.RumorMessage),
-		NextHop:             make(map[string]*net.UDPAddr),
-		Peers:               parsePeerSet(peers, gossipAddrRaw),
-		want:                make(map[string]uint32),
-		channelsLock:        &sync.RWMutex{},
-		MessagesLock:        &sync.RWMutex{},
-		NextHopLock:         &sync.RWMutex{},
-		PeersLock:           &sync.RWMutex{},
-		wantLock:            &sync.RWMutex{},
+		counter:      1,
+		Name:         name,
+		gossipConn:   gossipConn,
+		channels:     make(map[string]chan bool),
+		Messages:     make(map[common.MapKey]common.RumorMessage),
+		NextHop:      make(map[string]*net.UDPAddr),
+		Peers:        parsePeerSet(peers, gossipAddrRaw),
+		want:         make(map[string]uint32),
+		channelsLock: &sync.RWMutex{},
+		MessagesLock: &sync.RWMutex{},
+		NextHopLock:  &sync.RWMutex{},
+		PeersLock:    &sync.RWMutex{},
+		wantLock:     &sync.RWMutex{},
 	}
 }
 
