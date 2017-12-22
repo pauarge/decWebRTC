@@ -28,9 +28,9 @@ func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		g.PeersLock.Lock()
-		g.Peers[getRelayStr(relay)] = true
-		g.PeersLock.Unlock()
+		g.peersLock.Lock()
+		g.peers[getRelayStr(relay)] = true
+		g.peersLock.Unlock()
 		m := common.GossipPacket{}
 		err = protobuf.Decode(buf[0:n], &m)
 		if err == nil {
@@ -52,11 +52,11 @@ func (g *Gossiper) antiEntropy(wg sync.WaitGroup) {
 	ticker := time.NewTicker(time.Second * common.LongTimeOutSecs)
 	for range ticker.C {
 		var p []string
-		g.PeersLock.RLock()
-		for i := range g.Peers {
+		g.peersLock.RLock()
+		for i := range g.peers {
 			p = append(p, i)
 		}
-		g.PeersLock.RUnlock()
+		g.peersLock.RUnlock()
 		if len(p) > 0 {
 			e, _ := pickRandomElem(p)
 			addr, err := net.ResolveUDPAddr("udp4", e)

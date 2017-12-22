@@ -66,11 +66,11 @@ func (g *Gossiper) encodeWant() common.StatusPacket {
 }
 
 func (g *Gossiper) getPeerList(exclude string) []string {
-	defer g.PeersLock.RUnlock()
-	g.PeersLock.RLock()
+	defer g.peersLock.RUnlock()
+	g.peersLock.RLock()
 
 	var p []string
-	for i := range g.Peers {
+	for i := range g.peers {
 		if i != exclude {
 			p = append(p, i)
 		}
@@ -80,13 +80,13 @@ func (g *Gossiper) getPeerList(exclude string) []string {
 
 func (g *Gossiper) createRouteRumor() common.RumorMessage {
 	defer g.wantLock.Unlock()
-	defer g.MessagesLock.Unlock()
-	g.MessagesLock.Lock()
+	defer g.messagesLock.Unlock()
+	g.messagesLock.Lock()
 	g.wantLock.Lock()
 
-	msg := common.RumorMessage{Origin: g.Name, Id: g.counter}
-	g.Messages[common.MapKey{Origin: g.Name, MessageId: g.counter}] = msg
+	msg := common.RumorMessage{Origin: g.name, Id: g.counter}
+	g.messages[common.MapKey{Origin: g.name, MessageId: g.counter}] = msg
 	g.counter += 1
-	g.want[g.Name] = g.counter
+	g.want[g.name] = g.counter
 	return msg
 }

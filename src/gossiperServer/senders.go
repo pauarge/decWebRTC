@@ -28,9 +28,9 @@ func (g *Gossiper) SendPrivateMessage(msg common.PrivateMessage) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	g.NextHopLock.RLock()
-	relay, ok := g.NextHop[msg.Destination]
-	g.NextHopLock.RUnlock()
+	g.nextHopLock.RLock()
+	relay, ok := g.nextHop[msg.Destination]
+	g.nextHopLock.RUnlock()
 	if ok {
 		g.gossipConn.WriteToUDP(packetBytes, relay)
 		if err != nil {

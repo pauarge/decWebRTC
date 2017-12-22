@@ -20,7 +20,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	g.sockLock.Lock()
-	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: g.Name})
+	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: g.name})
 	g.sockLock.Unlock()
 	defer c.Close()
 
@@ -44,10 +44,10 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			req := common.JSONRequest{
 				Type:  "offer",
 				Offer: data.Offer,
-				Name:  g.Name,
+				Name:  g.name,
 			}
 			msg := common.PrivateMessage{
-				Origin:      g.Name,
+				Origin:      g.name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &req,
@@ -61,7 +61,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 				Answer: data.Answer,
 			}
 			msg := common.PrivateMessage{
-				Origin:      g.Name,
+				Origin:      g.name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &req,
@@ -75,7 +75,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 				Candidate: data.Candidate,
 			}
 			msg := common.PrivateMessage{
-				Origin:      g.Name,
+				Origin:      g.name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &req,
@@ -88,7 +88,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 				Type: "leave",
 			}
 			msg := common.PrivateMessage{
-				Origin:      g.Name,
+				Origin:      g.name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &req,

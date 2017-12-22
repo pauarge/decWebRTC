@@ -12,17 +12,17 @@ import (
 
 type Gossiper struct {
 	counter      uint32
-	Name         string
+	name         string
 	gossipConn   *net.UDPConn
 	channels     map[string]chan bool
-	Messages     map[common.MapKey]common.RumorMessage
-	NextHop      map[string]*net.UDPAddr
-	Peers        map[string]bool
+	messages     map[common.MapKey]common.RumorMessage
+	nextHop      map[string]*net.UDPAddr
+	peers        map[string]bool
 	want         map[string]uint32
 	channelsLock *sync.RWMutex
-	MessagesLock *sync.RWMutex
-	NextHopLock  *sync.RWMutex
-	PeersLock    *sync.RWMutex
+	messagesLock *sync.RWMutex
+	nextHopLock  *sync.RWMutex
+	peersLock    *sync.RWMutex
 	wantLock     *sync.RWMutex
 
 	// GUI
@@ -42,17 +42,17 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 	}
 	return &Gossiper{
 		counter:      1,
-		Name:         name,
+		name:         name,
 		gossipConn:   gossipConn,
 		channels:     make(map[string]chan bool),
-		Messages:     make(map[common.MapKey]common.RumorMessage),
-		NextHop:      make(map[string]*net.UDPAddr),
-		Peers:        parsePeerSet(peers, gossipAddrRaw),
+		messages:     make(map[common.MapKey]common.RumorMessage),
+		nextHop:      make(map[string]*net.UDPAddr),
+		peers:        parsePeerSet(peers, gossipAddrRaw),
 		want:         make(map[string]uint32),
 		channelsLock: &sync.RWMutex{},
-		MessagesLock: &sync.RWMutex{},
-		NextHopLock:  &sync.RWMutex{},
-		PeersLock:    &sync.RWMutex{},
+		messagesLock: &sync.RWMutex{},
+		nextHopLock:  &sync.RWMutex{},
+		peersLock:    &sync.RWMutex{},
 		wantLock:     &sync.RWMutex{},
 		router:       mux.NewRouter(),
 		sockLock:     &sync.RWMutex{},

@@ -44,9 +44,9 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	g.wantLock.RUnlock()
 
 	if dest != (common.MapKey{}) {
-		g.MessagesLock.RLock()
-		msg := g.Messages[dest]
-		g.MessagesLock.RUnlock()
+		g.messagesLock.RLock()
+		msg := g.messages[dest]
+		g.messagesLock.RUnlock()
 		g.rumorMongering(relayStr, msg)
 	} else if !synced {
 		g.sendStatusPacket(relay)
@@ -58,28 +58,28 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 	wantMsgOrigin := g.want[msg.Origin]
 	g.wantLock.RUnlock()
 
-	if wantMsgOrigin > msg.Id && msg.Origin != g.Name && msg.LastPort == nil && msg.LastIP == nil {
-		g.NextHopLock.Lock()
-		g.NextHop[msg.Origin] = relay
-		g.NextHopLock.Unlock()
+	if wantMsgOrigin > msg.Id && msg.Origin != g.name && msg.LastPort == nil && msg.LastIP == nil {
+		g.nextHopLock.Lock()
+		g.nextHop[msg.Origin] = relay
+		g.nextHopLock.Unlock()
 	} else if wantMsgOrigin == msg.Id || wantMsgOrigin == 0 {
 		if msg.LastPort != nil && msg.LastIP != nil {
-			g.PeersLock.Lock()
-			g.Peers[msg.LastIP.String()+":"+strconv.Itoa(*msg.LastPort)] = true
-			g.PeersLock.Unlock()
+			g.peersLock.Lock()
+			g.peers[msg.LastIP.String()+":"+strconv.Itoa(*msg.LastPort)] = true
+			g.peersLock.Unlock()
 		}
 
 		g.wantLock.Lock()
 		g.want[msg.Origin] = msg.Id + 1
 		g.wantLock.Unlock()
 
-		g.MessagesLock.Lock()
-		g.Messages[common.MapKey{Origin: msg.Origin, MessageId: msg.Id}] = msg
-		g.MessagesLock.Unlock()
+		g.messagesLock.Lock()
+		g.messages[common.MapKey{Origin: msg.Origin, MessageId: msg.Id}] = msg
+		g.messagesLock.Unlock()
 
-		g.NextHopLock.Lock()
-		g.NextHop[msg.Origin] = relay
-		g.NextHopLock.Unlock()
+		g.nextHopLock.Lock()
+		g.nextHop[msg.Origin] = relay
+		g.nextHopLock.Unlock()
 
 		g.sendStatusPacket(relay)
 
@@ -91,7 +91,7 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 
 func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 	msg.HopLimit -= 1
-	if msg.Destination == g.Name {
+	if msg.Destination == g.name {
 		g.sockLock.Lock()
 		g.sock.WriteJSON(msg.Data)
 		g.sockLock.Unlock()
