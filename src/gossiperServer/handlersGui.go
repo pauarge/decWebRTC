@@ -19,7 +19,9 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		g.sock = c
 	}
 
+	g.sockLock.Lock()
 	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: g.Name})
+	g.sockLock.Unlock()
 	defer c.Close()
 
 	for {

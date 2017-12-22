@@ -92,7 +92,9 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 	msg.HopLimit -= 1
 	if msg.Destination == g.Name {
+		g.sockLock.Lock()
 		g.sock.WriteJSON(msg.Data)
+		g.sockLock.Unlock()
 	} else if msg.HopLimit > 0 {
 		g.SendPrivateMessage(msg)
 	}

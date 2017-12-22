@@ -26,8 +26,9 @@ type Gossiper struct {
 	wantLock     *sync.RWMutex
 
 	// GUI
-	router *mux.Router
-	sock   *websocket.Conn
+	router   *mux.Router
+	sock     *websocket.Conn
+	sockLock *sync.RWMutex
 }
 
 func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
@@ -54,6 +55,7 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 		PeersLock:    &sync.RWMutex{},
 		wantLock:     &sync.RWMutex{},
 		router:       mux.NewRouter(),
+		sockLock:     &sync.RWMutex{},
 	}
 }
 
