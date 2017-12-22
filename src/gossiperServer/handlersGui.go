@@ -44,7 +44,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			req := common.JSONRequest{
 				Type:  "offer",
 				Offer: data.Offer,
-				Name:  data.Name,
+				Name:  g.Name,
 			}
 			msg := common.PrivateMessage{
 				Origin:      g.Name,

@@ -142,8 +142,6 @@ callBtn.addEventListener("click", function () {
 
 //when somebody sends us an offer
 function handleOffer(offer, name) {
-    console.log("Handling offer from " + name);
-
     connectedUser = name;
     yourConn.setRemoteDescription(new RTCSessionDescription(offer));
 
@@ -163,13 +161,11 @@ function handleOffer(offer, name) {
 
 //when we got an answer from a remote user
 function handleAnswer(answer) {
-    console.log("Handling answer");
     yourConn.setRemoteDescription(new RTCSessionDescription(answer));
 }
 
 //when we got an ice candidate from a remote user
 function handleCandidate(candidate) {
-    console.log("Handling candidate");
     yourConn.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
