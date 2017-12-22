@@ -172,7 +172,8 @@ function handleCandidate(candidate) {
 //hang up
 hangUpBtn.addEventListener("click", function () {
     send({
-        type: "leave"
+        type: "leave",
+        name: connectedUser
     });
     handleLeave();
 });
