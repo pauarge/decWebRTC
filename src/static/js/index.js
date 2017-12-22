@@ -88,16 +88,16 @@ function handleLogin(data) {
 
                 //using Google public stun server
                 var configuration = {
-                    "iceServers": [{"urls": "stun:stun2.1.google.com:19302"}]
+                    "iceServers": [{"url": "stun:stun2.1.google.com:19302"}]
                 };
 
-                yourConn = new RTCPeerConnection(configuration);
+                yourConn = new webkitRTCPeerConnection(configuration);
 
                 // setup stream listening
                 yourConn.addStream(stream);
 
                 //when a remote user adds stream to the peer connection, we display it
-                yourConn.ontrack = function (e) {
+                yourConn.onaddstream = function (e) {
                     remoteVideo.srcObject = e.stream;
                 };
 
@@ -135,7 +135,6 @@ callBtn.addEventListener("click", function () {
             yourConn.setLocalDescription(offer);
         }, function (error) {
             alert("Error when creating an offer");
-            console.log(error);
         });
 
     }
@@ -157,7 +156,6 @@ function handleOffer(offer, name) {
 
     }, function (error) {
         alert("Error when creating an answer");
-        console.log(error);
     });
 }
 
