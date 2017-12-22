@@ -15,7 +15,7 @@ conn.onmessage = function (msg) {
 
     var data = JSON.parse(msg.data);
 
-    switch(data.Type) {
+    switch (data.Type) {
         case "login":
             handleLogin(data);
             break;
@@ -79,41 +79,41 @@ function handleLogin(data) {
         //**********************
 
         //getting local video stream
-        navigator.webkitGetUserMedia({ video: true, audio: false }, function (myStream) {
-            stream = myStream;
+        navigator.mediaDevices.getUserMedia({video: true, audio: false})
+            .then(function (myStream) {
+                stream = myStream;
 
-            //displaying local video stream on the page
-            localVideo.srcObject = stream;
+                //displaying local video stream on the page
+                localVideo.srcObject = stream;
 
-            //using Google public stun server
-            var configuration = {
-                "iceServers": [{ "url": "stun:stun2.1.google.com:19302" }]
-            };
+                //using Google public stun server
+                var configuration = {
+                    "iceServers": [{"urls": "stun:stun2.1.google.com:19302"}]
+                };
 
-            yourConn = new webkitRTCPeerConnection(configuration);
+                yourConn = new RTCPeerConnection(configuration);
 
-            // setup stream listening
-            yourConn.addStream(stream);
+                // setup stream listening
+                yourConn.addStream(stream);
 
-            //when a remote user adds stream to the peer connection, we display it
-            yourConn.onaddstream = function (e) {
-                remoteVideo.srcObject = e.stream;
-            };
+                //when a remote user adds stream to the peer connection, we display it
+                yourConn.ontrack = function (e) {
+                    remoteVideo.srcObject = e.stream;
+                };
 
-            // Setup ice handling
-            yourConn.onicecandidate = function (event) {
-                if (event.candidate) {
-                    send({
-                        type: "candidate",
-                        candidate: event.candidate
-                    });
-                }
-            };
-
-        }, function (error) {
-            console.log(error);
-        });
-
+                // Setup ice handling
+                yourConn.onicecandidate = function (event) {
+                    if (event.candidate) {
+                        send({
+                            type: "candidate",
+                            candidate: event.candidate
+                        });
+                    }
+                };
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
     }
 }
 
@@ -135,6 +135,7 @@ callBtn.addEventListener("click", function () {
             yourConn.setLocalDescription(offer);
         }, function (error) {
             alert("Error when creating an offer");
+            console.log(error);
         });
 
     }
@@ -156,6 +157,7 @@ function handleOffer(offer, name) {
 
     }, function (error) {
         alert("Error when creating an answer");
+        console.log(error);
     });
 }
 
