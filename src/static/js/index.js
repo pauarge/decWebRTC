@@ -142,7 +142,7 @@ callBtn.addEventListener("click", function () {
 
 //when somebody sends us an offer
 function handleOffer(offer, name) {
-    console.log("Handling offer");
+    console.log("Handling offer from " + name);
 
     connectedUser = name;
     yourConn.setRemoteDescription(new RTCSessionDescription(offer));
