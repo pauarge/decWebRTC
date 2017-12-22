@@ -41,31 +41,44 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		switch data.Type {
 		case "offer":
 			log.Println("Sending offer to " + data.Name)
+			req := common.JSONRequest{
+				Type:  "offer",
+				Offer: data.Offer,
+				Name:  g.Name,
+			}
 			msg := common.PrivateMessage{
 				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
-				Data:        &data,
+				Data:        &req,
 			}
 			g.SendPrivateMessage(msg)
 
 		case "answer":
 			log.Println("Received an answer")
+			req := common.JSONRequest{
+				Type: "answer",
+				Answer: data.Answer,
+			}
 			msg := common.PrivateMessage{
 				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
-				Data:        &data,
+				Data:        &req,
 			}
 			g.SendPrivateMessage(msg)
 
 		case "candidate":
 			log.Println("Received a candidate")
+			req := common.JSONRequest{
+				Type: "candidate",
+				Candidate: data.Candidate,
+			}
 			msg := common.PrivateMessage{
 				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
-				Data:        &data,
+				Data:        &req,
 			}
 			g.SendPrivateMessage(msg)
 
