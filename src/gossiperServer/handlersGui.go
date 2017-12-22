@@ -1,4 +1,4 @@
-package guiServer
+package gossiperServer
 
 import (
 	"net/http"
@@ -10,16 +10,16 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
-func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
+func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	} else {
-		s.Sock = c
+		g.sock = c
 	}
 
-	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: s.gossiper.Name})
+	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: g.Name})
 	defer c.Close()
 
 	for {
@@ -40,32 +40,32 @@ func (s *Server) echoHandler(w http.ResponseWriter, r *http.Request) {
 		case "offer":
 			log.Println("Sending offer to " + data.Name)
 			msg := common.PrivateMessage{
-				Origin:      s.gossiper.Name,
+				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &data,
 			}
-			s.gossiper.SendPrivateMessage(msg)
+			g.SendPrivateMessage(msg)
 
 		case "answer":
 			log.Println("Received an answer")
 			msg := common.PrivateMessage{
-				Origin:      s.gossiper.Name,
+				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &data,
 			}
-			s.gossiper.SendPrivateMessage(msg)
+			g.SendPrivateMessage(msg)
 
 		case "candidate":
 			log.Println("Received a candidate")
 			msg := common.PrivateMessage{
-				Origin:      s.gossiper.Name,
+				Origin:      g.Name,
 				Destination: data.Name,
 				HopLimit:    common.MaxHops,
 				Data:        &data,
 			}
-			s.gossiper.SendPrivateMessage(msg)
+			g.SendPrivateMessage(msg)
 
 			/*case "leave":
 				log.Println("Received a leave")

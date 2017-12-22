@@ -7,7 +7,18 @@ import (
 	"net"
 	"github.com/pauarge/decWebRTC/src/common"
 	"github.com/dedis/protobuf"
+	"net/http"
 )
+
+func (g *Gossiper) listenGUI() {
+	g.router.HandleFunc("/echo", g.echoHandler)
+	g.router.PathPrefix("/").Handler(http.FileServer(http.Dir("static/")))
+
+	http.Handle("/", g.router)
+
+	log.Printf("Serving on HTTP port %s\n", common.GuiPort)
+	log.Fatal(http.ListenAndServe(":"+common.GuiPort, nil))
+}
 
 func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
 	defer wg.Done()

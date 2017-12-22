@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/pauarge/decWebRTC/src/gossiperServer"
-	"github.com/pauarge/decWebRTC/src/guiServer"
 	"github.com/pauarge/decWebRTC/src/common"
 )
 
@@ -19,7 +18,6 @@ func main() {
 		flag.PrintDefaults()
 	} else {
 		g := gossiperServer.NewGossiper(*gossipAddrPtr, *namePtr, *peersPtr)
-		go guiServer.NewServer(g).Start()
 		g.Start(*rtimerPtr)
 	}
 }
