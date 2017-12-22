@@ -184,7 +184,7 @@ function handleLeave() {
     connectedUser = null;
     remoteVideo.srcObject = null;
 
-    yourConn.close();
+    //yourConn.close();
     //yourConn.onicecandidate = null;
     //yourConn.onaddstream = null;
 }
