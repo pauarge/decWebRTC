@@ -2,7 +2,6 @@ package gossiperServer
 
 import (
 	"net"
-	"fmt"
 	"log"
 	"time"
 	"github.com/dedis/protobuf"
@@ -47,7 +46,7 @@ func (g *Gossiper) iterativeRumorMongering(exclude string, msg common.RumorMessa
 }
 
 func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
-	fmt.Println("MONGERING ROUTE to " + address)
+	log.Println("MONGERING ROUTE to " + address)
 	p := common.GossipPacket{Rumor: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {
@@ -67,7 +66,7 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			g.channelsLock.Lock()
 			if ch, ok := g.channels[address]; ok {
 				ch <- true
-				fmt.Println("TIMEOUT ON MONGERING")
+				log.Println("TIMEOUT ON MONGERING")
 			}
 			g.channelsLock.Unlock()
 			return
