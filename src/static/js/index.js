@@ -135,6 +135,7 @@ callBtn.addEventListener("click", function () {
             yourConn.setLocalDescription(offer);
         }, function (error) {
             alert("Error when creating an offer");
+            console.log(error);
         });
 
     }
@@ -156,6 +157,7 @@ function handleOffer(offer, name) {
 
     }, function (error) {
         alert("Error when creating an answer");
+        console.log(error);
     });
 }
 
@@ -180,9 +182,9 @@ hangUpBtn.addEventListener("click", function () {
 
 function handleLeave() {
     connectedUser = null;
-    remoteVideo.src = null;
+    remoteVideo.srcObject = null;
 
     yourConn.close();
-    yourConn.onicecandidate = null;
-    yourConn.onaddstream = null;
+    //yourConn.onicecandidate = null;
+    //yourConn.onaddstream = null;
 }
