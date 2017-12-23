@@ -1,49 +1,16 @@
-//our username
 var name;
 var connectedUser;
+var yourConn;
+var stream;
 
-//connecting to our signaling server
 var conn = new WebSocket('ws://127.0.0.1:8080/echo');
 
-conn.onopen = function () {
-    console.log("Connected to the signaling server");
-};
+var callToUsernameInput = document.querySelector('#callToUsernameInput');
+var callBtn = document.querySelector('#callBtn');
+var hangUpBtn = document.querySelector('#hangUpBtn');
+var localVideo = document.querySelector('#localVideo');
+var remoteVideo = document.querySelector('#remoteVideo');
 
-//when we got a message from a signaling server
-conn.onmessage = function (msg) {
-    console.log("Got message", msg.data);
-
-    var data = JSON.parse(msg.data);
-
-    switch (data.Type) {
-        case "login":
-            handleLogin(data);
-            break;
-        //when somebody wants to call us
-        case "offer":
-            handleOffer(data.Offer, data.Name);
-            break;
-        case "answer":
-            handleAnswer(data.Answer);
-            break;
-        //when a remote peer sends an ice candidate to us
-        case "candidate":
-            handleCandidate(data.Candidate);
-            break;
-        case "leave":
-            handleLeave();
-            break;
-        default:
-            console.log("Could not handle unknown type");
-            break;
-    }
-};
-
-conn.onerror = function (err) {
-    console.log("Got error", err);
-};
-
-//alias for sending JSON encoded messages
 function send(message) {
     //attach the other peer username to our messages
     if (connectedUser) {
@@ -59,21 +26,6 @@ function send(message) {
         conn.send(JSON.stringify(message));
     }
 }
-
-//******
-//UI selectors block
-//******
-
-var callToUsernameInput = document.querySelector('#callToUsernameInput');
-var callBtn = document.querySelector('#callBtn');
-
-var hangUpBtn = document.querySelector('#hangUpBtn');
-
-var localVideo = document.querySelector('#localVideo');
-var remoteVideo = document.querySelector('#remoteVideo');
-
-var yourConn;
-var stream;
 
 function handleLogin(data) {
     if (data.Success === false) {
@@ -125,32 +77,6 @@ function handleLogin(data) {
     }
 }
 
-//initiating a call
-callBtn.addEventListener("click", function () {
-    var callToUsername = callToUsernameInput.value;
-
-    if (callToUsername.length > 0 && callToUsername !== name) {
-
-        connectedUser = callToUsername;
-
-        // create an offer
-        yourConn.createOffer(function (offer) {
-            send({
-                type: "offer",
-                offer: offer
-            });
-
-            yourConn.setLocalDescription(offer);
-        }, function (error) {
-            alert("Error when creating an offer");
-            console.log(error);
-        });
-
-    } else {
-        alert("Please, enter a valid username to call");
-    }
-});
-
 //when somebody sends us an offer
 function handleOffer(offer, name) {
     connectedUser = name;
@@ -181,15 +107,6 @@ function handleCandidate(candidate) {
     yourConn.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
-//hang up
-hangUpBtn.addEventListener("click", function () {
-    send({
-        type: "leave",
-        name: connectedUser
-    });
-    handleLeave();
-});
-
 function handleLeave() {
     connectedUser = null;
     remoteVideo.srcObject = null;
@@ -198,3 +115,77 @@ function handleLeave() {
     yourConn.onicecandidate = null;
     yourConn.onaddstream = null;
 }
+
+conn.onopen = function () {
+    console.log("Connected to the signaling server");
+};
+
+//when we got a message from a signaling server
+conn.onmessage = function (msg) {
+    console.log("Got message", msg.data);
+
+    var data = JSON.parse(msg.data);
+
+    switch (data.Type) {
+        case "login":
+            handleLogin(data);
+            break;
+        //when somebody wants to call us
+        case "offer":
+            handleOffer(data.Offer, data.Name);
+            break;
+        case "answer":
+            handleAnswer(data.Answer);
+            break;
+        //when a remote peer sends an ice candidate to us
+        case "candidate":
+            handleCandidate(data.Candidate);
+            break;
+        case "leave":
+            handleLeave();
+            break;
+        default:
+            console.log("Could not handle unknown type");
+            break;
+    }
+};
+
+conn.onerror = function (err) {
+    console.log("Got error", err);
+};
+
+
+//initiating a call
+callBtn.addEventListener("click", function () {
+    var callToUsername = callToUsernameInput.value;
+
+    if (callToUsername.length > 0 && callToUsername !== name) {
+
+        connectedUser = callToUsername;
+
+        // create an offer
+        yourConn.createOffer(function (offer) {
+            send({
+                type: "offer",
+                offer: offer
+            });
+
+            yourConn.setLocalDescription(offer);
+        }, function (error) {
+            alert("Error when creating an offer");
+            console.log(error);
+        });
+
+    } else {
+        alert("Please, enter a valid username to call");
+    }
+});
+
+//hang up
+hangUpBtn.addEventListener("click", function () {
+    send({
+        type: "leave",
+        name: connectedUser
+    });
+    handleLeave();
+});
