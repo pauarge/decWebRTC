@@ -44,10 +44,17 @@ function handleLogin(data) {
 
             //using Google public stun server
             var configuration = {
-                "iceServers": [{"urls": "stun:stun2.1.google.com:19302"}]
+                "iceServers": [{
+                    "urls": [
+                        "stun:stun.l.google.com:19302",
+                        "stun:stun1.l.google.com:19302",
+                        "stun:stun2.l.google.com:19302",
+                        "stun:stun3.l.google.com:19302",
+                        "stun:stun4.l.google.com:19302"]
+                }]
             };
 
-            yourConn = new webkitRTCPeerConnection(configuration);
+            yourConn = new RTCPeerConnection(configuration);
 
             // setup stream listening
             yourConn.addStream(stream);
