@@ -53,8 +53,8 @@ function handleLogin(data) {
             yourConn.addStream(stream);
 
             //when a remote user adds stream to the peer connection, we display it
-            yourConn.onaddstream = function (e) {
-                remoteVideo.srcObject = e.stream;
+            yourConn.ontrack = function (event) {
+                remoteVideo.srcObject = event.streams[0];
             };
 
             // Setup ice handling
