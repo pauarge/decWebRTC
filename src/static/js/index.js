@@ -49,7 +49,15 @@ function send(message) {
     if (connectedUser) {
         message.name = connectedUser;
     }
-    conn.send(JSON.stringify(message));
+    if (conn.readyState === conn.CLOSED || conn.readyState === conn.CLOSING) {
+        conn = new WebSocket('ws://127.0.0.1:8080/echo');
+        conn.onopen = function () {
+            conn.send(JSON.stringify(message));
+            console.log("Reconnected to the signaling server");
+        };
+    } else {
+        conn.send(JSON.stringify(message));
+    }
 }
 
 //******
@@ -121,7 +129,7 @@ function handleLogin(data) {
 callBtn.addEventListener("click", function () {
     var callToUsername = callToUsernameInput.value;
 
-    if (callToUsername.length > 0) {
+    if (callToUsername.length > 0 && callToUsername !== name) {
 
         connectedUser = callToUsername;
 
@@ -138,6 +146,8 @@ callBtn.addEventListener("click", function () {
             console.log(error);
         });
 
+    } else {
+        alert("Please, enter a valid username to call");
     }
 });
 
@@ -184,7 +194,7 @@ function handleLeave() {
     connectedUser = null;
     remoteVideo.srcObject = null;
 
-    //yourConn.close();
-    //yourConn.onicecandidate = null;
-    //yourConn.onaddstream = null;
+    yourConn.close();
+    yourConn.onicecandidate = null;
+    yourConn.onaddstream = null;
 }
