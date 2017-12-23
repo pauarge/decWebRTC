@@ -19,6 +19,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		g.sock = c
 	}
 
+	log.Println("Web client connected through socket")
 	g.sockLock.Lock()
 	c.WriteJSON(common.JSONRequest{Type: "login", Name: g.name})
 	g.sockLock.Unlock()
@@ -41,7 +42,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				g.SendPrivateMessage(msg)
 			}
-			log.Println("read:", err)
+			log.Println("Web client disconnected")
 			break
 		}
 
