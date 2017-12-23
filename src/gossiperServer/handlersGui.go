@@ -24,9 +24,23 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	g.sockLock.Unlock()
 	defer c.Close()
 
+	var connectedUser string
+
 	for {
 		_, message, err := c.ReadMessage()
 		if err != nil {
+			if connectedUser != "" {
+				req := common.JSONRequest{
+					Type: "leave",
+				}
+				msg := common.PrivateMessage{
+					Origin:      g.name,
+					Destination: connectedUser,
+					HopLimit:    common.MaxHops,
+					Data:        req,
+				}
+				g.SendPrivateMessage(msg)
+			}
 			log.Println("read:", err)
 			break
 		}
@@ -50,6 +64,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		case "answer":
 			log.Println("Received an answer")
+			connectedUser = data.Name
 			req = common.JSONRequest{
 				Type:   "answer",
 				Answer: data.Answer,
@@ -57,6 +72,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		case "candidate":
 			log.Println("Received a candidate")
+			connectedUser = data.Name
 			req = common.JSONRequest{
 				Type:      "candidate",
 				Candidate: data.Candidate,
@@ -64,6 +80,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		case "leave":
 			log.Println("Received a leave")
+			connectedUser = ""
 			req = common.JSONRequest{
 				Type: "leave",
 			}
