@@ -38,65 +38,47 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
+		var req common.JSONRequest
 		switch data.Type {
 		case "offer":
 			log.Println("Sending offer to " + data.Name)
-			req := common.JSONRequest{
+			req = common.JSONRequest{
 				Type:  "offer",
 				Offer: data.Offer,
 				Name:  g.name,
 			}
-			msg := common.PrivateMessage{
-				Origin:      g.name,
-				Destination: data.Name,
-				HopLimit:    common.MaxHops,
-				Data:        &req,
-			}
-			g.SendPrivateMessage(msg)
 
 		case "answer":
 			log.Println("Received an answer")
-			req := common.JSONRequest{
+			req = common.JSONRequest{
 				Type:   "answer",
 				Answer: data.Answer,
 			}
-			msg := common.PrivateMessage{
-				Origin:      g.name,
-				Destination: data.Name,
-				HopLimit:    common.MaxHops,
-				Data:        &req,
-			}
-			g.SendPrivateMessage(msg)
 
 		case "candidate":
 			log.Println("Received a candidate")
-			req := common.JSONRequest{
+			req = common.JSONRequest{
 				Type:      "candidate",
 				Candidate: data.Candidate,
 			}
-			msg := common.PrivateMessage{
-				Origin:      g.name,
-				Destination: data.Name,
-				HopLimit:    common.MaxHops,
-				Data:        &req,
-			}
-			g.SendPrivateMessage(msg)
 
 		case "leave":
 			log.Println("Received a leave")
-			req := common.JSONRequest{
+			req = common.JSONRequest{
 				Type: "leave",
 			}
-			msg := common.PrivateMessage{
-				Origin:      g.name,
-				Destination: data.Name,
-				HopLimit:    common.MaxHops,
-				Data:        &req,
-			}
-			g.SendPrivateMessage(msg)
 
 		default:
 			log.Println("Did not understand the command")
+			continue
 		}
+
+		msg := common.PrivateMessage{
+			Origin:      g.name,
+			Destination: data.Name,
+			HopLimit:    common.MaxHops,
+			Data:        &req,
+		}
+		g.SendPrivateMessage(msg)
 	}
 }
