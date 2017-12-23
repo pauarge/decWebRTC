@@ -30,7 +30,7 @@ function send(message) {
     }
 }
 
-function handleLogin(name) {
+function handleLogin() {
     document.querySelector('#username-placeholder').textContent = name;
 
     //getting local video stream
@@ -109,7 +109,7 @@ function handleLeave() {
     yourConn.onicecandidate = null;
     yourConn.onaddstream = null;
 
-    handleLogin(name);
+    handleLogin();
 }
 
 conn.onopen = function () {
@@ -124,7 +124,8 @@ conn.onmessage = function (msg) {
 
     switch (data.Type) {
         case "login":
-            handleLogin(data.Name);
+            name = data.Name;
+            handleLogin();
             break;
         //when somebody wants to call us
         case "offer":
