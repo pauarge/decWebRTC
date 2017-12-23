@@ -3,6 +3,8 @@ var connectedUser;
 var yourConn;
 var stream;
 
+var mediaConstrains = {video: true, audio: false};
+
 var wsAddr = "ws://127.0.0.1:8080/echo";
 var conn = new WebSocket(wsAddr);
 
@@ -29,53 +31,45 @@ function send(message) {
 }
 
 function handleLogin(data) {
-    if (data.Success === false) {
-        alert("Ooops...try a different username");
-    } else {
-        name = data.Name;
-        document.querySelector('#username-placeholder').textContent = name;
+    name = data.Name;
+    document.querySelector('#username-placeholder').textContent = name;
 
-        //**********************
-        //Starting a peer connection
-        //**********************
+    //getting local video stream
+    navigator.mediaDevices.getUserMedia(mediaConstrains)
+        .then(function (myStream) {
+            stream = myStream;
 
-        //getting local video stream
-        navigator.mediaDevices.getUserMedia({video: true, audio: false})
-            .then(function (myStream) {
-                stream = myStream;
+            //displaying local video stream on the page
+            localVideo.srcObject = stream;
 
-                //displaying local video stream on the page
-                localVideo.srcObject = stream;
+            //using Google public stun server
+            var configuration = {
+                "iceServers": [{"urls": "stun:stun2.1.google.com:19302"}]
+            };
 
-                //using Google public stun server
-                var configuration = {
-                    "iceServers": [{"urls": "stun:stun2.1.google.com:19302"}]
-                };
+            yourConn = new webkitRTCPeerConnection(configuration);
 
-                yourConn = new webkitRTCPeerConnection(configuration);
+            // setup stream listening
+            yourConn.addStream(stream);
 
-                // setup stream listening
-                yourConn.addStream(stream);
+            //when a remote user adds stream to the peer connection, we display it
+            yourConn.onaddstream = function (e) {
+                remoteVideo.srcObject = e.stream;
+            };
 
-                //when a remote user adds stream to the peer connection, we display it
-                yourConn.onaddstream = function (e) {
-                    remoteVideo.srcObject = e.stream;
-                };
-
-                // Setup ice handling
-                yourConn.onicecandidate = function (event) {
-                    if (event.candidate) {
-                        send({
-                            type: "candidate",
-                            candidate: event.candidate
-                        });
-                    }
-                };
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
-    }
+            // Setup ice handling
+            yourConn.onicecandidate = function (event) {
+                if (event.candidate) {
+                    send({
+                        type: "candidate",
+                        candidate: event.candidate
+                    });
+                }
+            };
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
 }
 
 //when somebody sends us an offer

@@ -45,7 +45,6 @@ type GossipPacket struct {
 
 type JSONRequest struct {
 	Type      string
-	Success   bool
 	Name      string
 	Offer     *json.RawMessage
 	Answer    *json.RawMessage

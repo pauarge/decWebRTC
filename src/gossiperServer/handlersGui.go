@@ -20,7 +20,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	g.sockLock.Lock()
-	c.WriteJSON(common.JSONRequest{Type: "login", Success: true, Name: g.name})
+	c.WriteJSON(common.JSONRequest{Type: "login", Name: g.name})
 	g.sockLock.Unlock()
 	defer c.Close()
 
