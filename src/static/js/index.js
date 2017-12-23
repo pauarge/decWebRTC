@@ -41,12 +41,7 @@ function handleLogin() {
             //displaying local video stream on the page
             localVideo.srcObject = stream;
 
-            //using Google public stun server
-            var configuration = {
-
-            };
-
-            yourConn = new RTCPeerConnection(configuration);
+            yourConn = new RTCPeerConnection({});
 
             // setup stream listening
             yourConn.addStream(stream);
@@ -140,6 +135,9 @@ conn.onmessage = function (msg) {
             break;
         case "leave":
             handleLeave();
+            break;
+        case "alreadyGUI":
+            alert("GUI already opened in another browser or tab");
             break;
         default:
             console.log("Could not handle unknown type");

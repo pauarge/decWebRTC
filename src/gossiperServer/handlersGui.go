@@ -13,7 +13,11 @@ var upgrader = websocket.Upgrader{}
 func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		log.Println("upgrade:", err)
+		return
+	} else if g.sock != nil {
+		c.WriteJSON(common.JSONRequest{Type: "alreadyGUI"})
+		log.Println("")
 		return
 	} else {
 		g.sock = c
@@ -42,6 +46,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				g.SendPrivateMessage(msg)
 			}
+			g.sock = nil
 			log.Println("Web client disconnected")
 			break
 		}
