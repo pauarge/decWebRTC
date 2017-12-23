@@ -23,7 +23,7 @@ type PrivateMessage struct {
 	Origin      string
 	Destination string
 	HopLimit    uint32
-	Data        *JSONRequest
+	Data        JSONRequest
 }
 
 type PeerStatus struct {
@@ -46,9 +46,9 @@ type GossipPacket struct {
 type JSONRequest struct {
 	Type      string
 	Name      string
-	Offer     *json.RawMessage
-	Answer    *json.RawMessage
-	Candidate *json.RawMessage
+	Offer     json.RawMessage
+	Answer    json.RawMessage
+	Candidate json.RawMessage
 }
 
 // PeerList sorting

@@ -77,7 +77,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			Origin:      g.name,
 			Destination: data.Name,
 			HopLimit:    common.MaxHops,
-			Data:        &req,
+			Data:        req,
 		}
 		g.SendPrivateMessage(msg)
 	}
