@@ -9,22 +9,15 @@
 
 <body>
 
-<div id="callPage" class="call-page">
-    <video id="localVideo" autoplay playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video>
+<video id="remoteVideo" autoplay playsinline></video>
 
-    <div class="row text-center">
-        <div class="col-md-12">
-            <input id="callToUsernameInput" type="text" placeholder="username to call"/>
-            <button id="callBtn" class="btn-success btn">Call</button>
-            <button id="hangUpBtn" class="btn-danger btn">Hang Up</button>
-        </div>
-    </div>
-    <div class="row text-center">
-        <div class="col-md-12">
-            <p>Logged in as <b><span id="username-placeholder"></span></b>.</p>
-        </div>
-    </div>
+<div class="content">
+    <video id="localVideo" autoplay playsinline></video>
+    <h1>Welcome to Decentralized WebRTC!</h1>
+    <p>Logged in as <b><span id="username-placeholder"></span></b>.</p>
+    <input id="callToUsernameInput" type="text" placeholder="username to call"/>
+    <button id="callBtn" class="btn-success btn">Call</button>
+    <button id="hangUpBtn" class="btn-danger btn">Hang Up</button>
 </div>
 
 <script src="lib/adapter.min.js"></script>
