@@ -46,7 +46,7 @@ func (g *Gossiper) iterativeRumorMongering(exclude string, msg common.RumorMessa
 }
 
 func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
-	log.Println("MONGERING ROUTE to " + address)
+	log.Println("Mongering route to " + address)
 	p := common.GossipPacket{Rumor: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {
@@ -66,7 +66,7 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			g.channelsLock.Lock()
 			if ch, ok := g.channels[address]; ok {
 				ch <- true
-				log.Println("TIMEOUT ON MONGERING")
+				log.Println("Timeout on mongering")
 			}
 			g.channelsLock.Unlock()
 			return

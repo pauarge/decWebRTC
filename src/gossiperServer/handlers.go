@@ -4,6 +4,7 @@ import (
 	"net"
 	"strconv"
 	"github.com/pauarge/decWebRTC/src/common"
+	"log"
 )
 
 func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAddr) {
@@ -48,7 +49,9 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 		msg := g.messages[dest]
 		g.messagesLock.RUnlock()
 		g.rumorMongering(relayStr, msg)
-	} else if !synced {
+	} else if synced {
+		log.Println("In sync with " + relayStr)
+	} else {
 		g.sendStatusPacket(relay)
 	}
 }
@@ -96,6 +99,7 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 		g.sock.WriteJSON(msg.Data)
 		g.sockLock.Unlock()
 	} else if msg.HopLimit > 0 {
+		log.Println("Forwaring private message")
 		g.SendPrivateMessage(msg)
 	}
 }
