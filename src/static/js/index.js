@@ -3,7 +3,8 @@ var connectedUser;
 var yourConn;
 var stream;
 
-var conn = new WebSocket('ws://127.0.0.1:8080/echo');
+var wsAddr = "ws://127.0.0.1:8080/echo";
+var conn = new WebSocket(wsAddr);
 
 var callToUsernameInput = document.querySelector('#callToUsernameInput');
 var callBtn = document.querySelector('#callBtn');
@@ -17,7 +18,7 @@ function send(message) {
         message.name = connectedUser;
     }
     if (conn.readyState === conn.CLOSED || conn.readyState === conn.CLOSING) {
-        conn = new WebSocket('ws://127.0.0.1:8080/echo');
+        conn = new WebSocket(wsAddr);
         conn.onopen = function () {
             conn.send(JSON.stringify(message));
             console.log("Reconnected to the signaling server");
