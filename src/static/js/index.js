@@ -46,6 +46,7 @@ function handleLogin() {
             yourConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
                 callStatusBig.text("Call with " + connectedUser);
+                $('.modal').modal('hide');
                 start();
             };
 
@@ -103,9 +104,33 @@ function handleLeave() {
 function handleUsers(users) {
     $('#availableUsersList').empty();
     for (var i in users) {
-
+        $('#availableUsersList')
+            .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
     console.log(users);
+}
+
+function call(callToUsername) {
+    if (callToUsername.length > 0 && callToUsername !== name) {
+
+        connectedUser = callToUsername;
+
+        // create an offer
+        yourConn.createOffer(function (offer) {
+            send({
+                type: "offer",
+                offer: offer
+            });
+
+            yourConn.setLocalDescription(offer);
+        }, function (error) {
+            alert("Error when creating an offer");
+            console.log(error);
+        });
+
+    } else {
+        alert("Please, enter a valid username to call");
+    }
 }
 
 conn.onopen = function () {
@@ -154,32 +179,6 @@ conn.onerror = function (err) {
 };
 
 
-//initiating a call
-/*callBtn.addEventListener("click", function () {
-    var callToUsername = callToUsernameInput.value;
-
-    if (callToUsername.length > 0 && callToUsername !== name) {
-
-        connectedUser = callToUsername;
-
-        // create an offer
-        yourConn.createOffer(function (offer) {
-            send({
-                type: "offer",
-                offer: offer
-            });
-
-            yourConn.setLocalDescription(offer);
-        }, function (error) {
-            alert("Error when creating an offer");
-            console.log(error);
-        });
-
-    } else {
-        alert("Please, enter a valid username to call");
-    }
-});*/
-
 //hang up
 hangUpBtn.addEventListener("click", function () {
     send({
@@ -187,6 +186,12 @@ hangUpBtn.addEventListener("click", function () {
         name: connectedUser
     });
     handleLeave();
+});
+
+$(document.body).on('click', '.callLaunch', function (e) {
+    e.preventDefault();
+    var dest = $(this).data('user');
+    call(dest);
 });
 
 $(document).ready(function () {
