@@ -78,7 +78,7 @@ func (g *Gossiper) getPeerList(exclude string) []string {
 	return p
 }
 
-func (g *Gossiper) getUsersList() []string {
+func (g *Gossiper) sendUserList() {
 	defer g.nextHopLock.RUnlock()
 	g.nextHopLock.RLock()
 
@@ -88,7 +88,12 @@ func (g *Gossiper) getUsersList() []string {
 	}
 
 	sort.Strings(users)
-	return users
+
+	if g.sock != nil {
+		g.sockLock.Lock()
+		g.sock.WriteJSON(common.JSONRequest{Type: "users", Users: users})
+		g.sockLock.Unlock()
+	}
 }
 
 func (g *Gossiper) createRouteRumor() common.RumorMessage {

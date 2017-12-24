@@ -8,8 +8,6 @@ var mediaConstrains = {video: true, audio: false};
 var wsAddr = "ws://127.0.0.1:8080/echo";
 var conn = new WebSocket(wsAddr);
 
-var callToUsernameInput = document.querySelector('#callToUsernameInput');
-var callBtn = document.querySelector('#callBtn');
 var hangUpBtn = document.querySelector('#hangUpBtn');
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
@@ -103,6 +101,10 @@ function handleLeave() {
 }
 
 function handleUsers(users) {
+    $('#availableUsersList').empty();
+    for (var i in users) {
+
+    }
     console.log(users);
 }
 
@@ -153,7 +155,7 @@ conn.onerror = function (err) {
 
 
 //initiating a call
-callBtn.addEventListener("click", function () {
+/*callBtn.addEventListener("click", function () {
     var callToUsername = callToUsernameInput.value;
 
     if (callToUsername.length > 0 && callToUsername !== name) {
@@ -176,7 +178,7 @@ callBtn.addEventListener("click", function () {
     } else {
         alert("Please, enter a valid username to call");
     }
-});
+});*/
 
 //hang up
 hangUpBtn.addEventListener("click", function () {
@@ -192,4 +194,5 @@ $(document).ready(function () {
     $('#timerBtn').prop('disabled', true);
     $('#hangUpBtn').prop('disabled', true);
     show();
+    $('#modalUsers').modal('show');
 });

@@ -26,8 +26,8 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Web client connected through socket")
 	g.sockLock.Lock()
 	c.WriteJSON(common.JSONRequest{Type: "login", Name: g.name})
-	c.WriteJSON(common.JSONRequest{Type: "users", Users: g.getUsersList()})
 	g.sockLock.Unlock()
+	g.sendUserList()
 	defer c.Close()
 
 	var connectedUser string

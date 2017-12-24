@@ -66,9 +66,7 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		g.nextHop[msg.Origin] = relay
 		g.nextHopLock.Unlock()
 
-		g.sockLock.Lock()
-		g.sock.WriteJSON(common.JSONRequest{Type: "users", Users: g.getUsersList()})
-		g.sockLock.Unlock()
+		g.sendUserList()
 	} else if wantMsgOrigin == msg.Id || wantMsgOrigin == 0 {
 		if msg.LastPort != nil && msg.LastIP != nil {
 			g.peersLock.Lock()
@@ -88,9 +86,7 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		g.nextHop[msg.Origin] = relay
 		g.nextHopLock.Unlock()
 
-		g.sockLock.Lock()
-		g.sock.WriteJSON(common.JSONRequest{Type: "users", Users: g.getUsersList()})
-		g.sockLock.Unlock()
+		g.sendUserList()
 
 		g.sendStatusPacket(relay)
 
