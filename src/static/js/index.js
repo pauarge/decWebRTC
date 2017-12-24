@@ -13,6 +13,9 @@ var callBtn = document.querySelector('#callBtn');
 var hangUpBtn = document.querySelector('#hangUpBtn');
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
+var callStatusBig = $('#callStatusBig');
+
+var noCallPhrase = "Not in an active call.";
 
 function send(message) {
     //attach the other peer username to our messages
@@ -37,21 +40,17 @@ function handleLogin() {
     navigator.mediaDevices.getUserMedia(mediaConstrains)
         .then(function (myStream) {
             stream = myStream;
-
-            //displaying local video stream on the page
             localVideo.srcObject = stream;
 
             yourConn = new RTCPeerConnection({});
-
-            // setup stream listening
             yourConn.addStream(stream);
 
-            //when a remote user adds stream to the peer connection, we display it
             yourConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
+                callStatusBig.text("Call with " + connectedUser);
+                start();
             };
 
-            // Setup ice handling
             yourConn.onicecandidate = function (event) {
                 if (event.candidate) {
                     send({
@@ -66,32 +65,26 @@ function handleLogin() {
         });
 }
 
-//when somebody sends us an offer
 function handleOffer(offer, name) {
     connectedUser = name;
     yourConn.setRemoteDescription(new RTCSessionDescription(offer));
 
-    //create an answer to an offer
     yourConn.createAnswer(function (answer) {
         yourConn.setLocalDescription(answer);
-
         send({
             type: "answer",
             answer: answer
         });
-
     }, function (error) {
         alert("Error when creating an answer");
         console.log(error);
     });
 }
 
-//when we got an answer from a remote user
 function handleAnswer(answer) {
     yourConn.setRemoteDescription(new RTCSessionDescription(answer));
 }
 
-//when we got an ice candidate from a remote user
 function handleCandidate(candidate) {
     yourConn.addIceCandidate(new RTCIceCandidate(candidate));
 }
@@ -102,9 +95,15 @@ function handleLeave() {
 
     yourConn.close();
     yourConn.onicecandidate = null;
-    yourConn.onaddstream = null;
+    yourConn.ontrack = null;
 
+    callStatusBig.text(noCallPhrase);
+    reset();
     handleLogin();
+}
+
+function handleUsers(users) {
+    console.log(users);
 }
 
 conn.onopen = function () {
@@ -138,6 +137,9 @@ conn.onmessage = function (msg) {
             break;
         case "alreadyGUI":
             alert("GUI already opened in another browser or tab");
+            break;
+        case "users":
+            handleUsers(data.Users);
             break;
         default:
             console.log("Could not handle unknown type");
@@ -183,4 +185,11 @@ hangUpBtn.addEventListener("click", function () {
         name: connectedUser
     });
     handleLeave();
+});
+
+$(document).ready(function () {
+    callStatusBig.text(noCallPhrase);
+    $('#timerBtn').prop('disabled', true);
+    $('#hangUpBtn').prop('disabled', true);
+    show();
 });

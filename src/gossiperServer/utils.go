@@ -78,6 +78,19 @@ func (g *Gossiper) getPeerList(exclude string) []string {
 	return p
 }
 
+func (g *Gossiper) getUsersList() []string {
+	defer g.nextHopLock.RUnlock()
+	g.nextHopLock.RLock()
+
+	var users []string
+	for k := range g.nextHop {
+		users = append(users, k)
+	}
+
+	sort.Strings(users)
+	return users
+}
+
 func (g *Gossiper) createRouteRumor() common.RumorMessage {
 	defer g.wantLock.Unlock()
 	defer g.messagesLock.Unlock()
