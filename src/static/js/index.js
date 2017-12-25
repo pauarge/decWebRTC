@@ -15,6 +15,9 @@ var callStatusBig = $('#callStatusBig');
 
 var noCallPhrase = "Not in an active call.";
 
+var callOffer;
+var callName;
+
 function send(message) {
     //attach the other peer username to our messages
     if (connectedUser) {
@@ -47,6 +50,7 @@ function handleLogin() {
                 remoteVideo.srcObject = event.streams[0];
                 callStatusBig.text("Call with " + connectedUser);
                 $('.modal').modal('hide');
+                $('#hangUpBtn').prop('disabled', false);
                 start();
             };
 
@@ -65,19 +69,10 @@ function handleLogin() {
 }
 
 function handleOffer(offer, name) {
-    connectedUser = name;
-    yourConn.setRemoteDescription(new RTCSessionDescription(offer));
-
-    yourConn.createAnswer(function (answer) {
-        yourConn.setLocalDescription(answer);
-        send({
-            type: "answer",
-            answer: answer
-        });
-    }, function (error) {
-        alert("Error when creating an answer");
-        console.log(error);
-    });
+    $('.modal').modal('hide');
+    $('#modalIncomCall').modal('show');
+    callOffer = offer;
+    callName = name;
 }
 
 function handleAnswer(answer) {
@@ -96,6 +91,8 @@ function handleLeave() {
     yourConn.onicecandidate = null;
     yourConn.ontrack = null;
 
+    $('#hangUpBtn').prop('disabled', true);
+    $('#modalUsers').modal('show');
     callStatusBig.text(noCallPhrase);
     reset();
     handleLogin();
@@ -107,7 +104,6 @@ function handleUsers(users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
-    console.log(users);
 }
 
 function call(callToUsername) {
@@ -192,6 +188,29 @@ $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
     var dest = $(this).data('user');
     call(dest);
+});
+
+$(document.body).on('click', '#respondCall', function (e) {
+    if (callOffer != null && callName != null) {
+        connectedUser = callName;
+        yourConn.setRemoteDescription(new RTCSessionDescription(callOffer));
+
+        yourConn.createAnswer(function (answer) {
+            yourConn.setLocalDescription(answer);
+            send({
+                type: "answer",
+                answer: answer
+            });
+        }, function (error) {
+            alert("Error when creating an answer");
+            console.log(error);
+        });
+    }
+});
+
+$(document.body).on('click', '#ignoreCall', function (e) {
+    callOffer = null;
+    callName = null;
 });
 
 $(document).ready(function () {

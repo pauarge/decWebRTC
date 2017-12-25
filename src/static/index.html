@@ -35,11 +35,16 @@
     </div>
 </div>
 
-<!-- incoming call modal -->
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
+<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
-            ...
+            <div class="modal-header">
+                <h4 class="modal-title">Incoming call</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="respondCall" class="btn btn-success">Respond</button>
+                <button type="button" id="ignoreCall" class="btn btn-danger">Ignore</button>
+            </div>
         </div>
     </div>
 </div>
