@@ -1,4 +1,4 @@
-package gossiperServer
+package server
 
 import (
 	"net"

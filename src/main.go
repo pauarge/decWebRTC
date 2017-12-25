@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"github.com/pauarge/decWebRTC/src/gossiperServer"
+	"github.com/pauarge/decWebRTC/src/server"
 	"github.com/pauarge/decWebRTC/src/common"
 )
 
@@ -17,7 +17,7 @@ func main() {
 	if *gossipAddrPtr == "" || *namePtr == "" {
 		flag.PrintDefaults()
 	} else {
-		g := gossiperServer.NewGossiper(*gossipAddrPtr, *namePtr, *peersPtr)
+		g := server.NewGossiper(*gossipAddrPtr, *namePtr, *peersPtr)
 		g.Start(*rtimerPtr)
 	}
 }
