@@ -65,12 +65,14 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Got init call")
 			req = common.JSONRequest{
 				Type: "initCall",
+				Name: g.name,
 			}
 
 		case "initCallKO":
 			log.Println("Got init call KO")
 			req = common.JSONRequest{
 				Type: "initCallKO",
+				Name: g.name,
 			}
 
 		case "offer":
