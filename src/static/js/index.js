@@ -74,7 +74,7 @@ function handleInitCall(name) {
 
 function handleInitCallKO() {
     alert("Call was rejected");
-    $('.modal').modal('hide');
+    $('#modalIncomCall').modal('hide');
     $('#modalUsers').modal('show');
 }
 
@@ -230,8 +230,8 @@ $(document.body).on('click', '#ignoreCall', function (e) {
         type: "initCallKO",
         name: initCallUser
     });
-    $('#modalIncomCall').hide();
-    $('#modalUsers').show();
+    $('#modalIncomCall').modal('hide');
+    $('#modalUsers').modal('show');
     initCallUser = null;
 });
 
