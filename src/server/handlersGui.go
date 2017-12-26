@@ -61,6 +61,18 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		var req common.JSONRequest
 		switch data.Type {
+		case "initCall":
+			log.Println("Got init call")
+			req = common.JSONRequest{
+				Type: "initCall",
+			}
+
+		case "initCallKO":
+			log.Println("Got init call KO")
+			req = common.JSONRequest{
+				Type: "initCallKO",
+			}
+
 		case "offer":
 			log.Println("Sending offer to " + data.Name)
 			req = common.JSONRequest{

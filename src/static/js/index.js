@@ -15,11 +15,9 @@ var callStatusBig = $('#callStatusBig');
 
 var noCallPhrase = "Not in an active call.";
 
-var callOffer;
-var callName;
+var initCallUser;
 
 function send(message) {
-    //attach the other peer username to our messages
     if (connectedUser) {
         message.name = connectedUser;
     }
@@ -68,11 +66,28 @@ function handleLogin() {
         });
 }
 
-function handleOffer(offer, name) {
+function handleInitCall(name) {
     $('.modal').modal('hide');
     $('#modalIncomCall').modal('show');
-    callOffer = offer;
-    callName = name;
+    initCallUser = name;
+}
+
+function handleOffer(offer, name) {
+    if (offer != null && name != null) {
+        connectedUser = name;
+        yourConn.setRemoteDescription(new RTCSessionDescription(offer));
+
+        yourConn.createAnswer(function (answer) {
+            yourConn.setLocalDescription(answer);
+            send({
+                type: "answer",
+                answer: answer
+            });
+        }, function (error) {
+            alert("Error when creating an answer");
+            console.log(error);
+        });
+    }
 }
 
 function handleAnswer(answer) {
@@ -144,7 +159,9 @@ conn.onmessage = function (msg) {
             name = data.Name;
             handleLogin();
             break;
-        //when somebody wants to call us
+        case "initCall":
+            handleInitCall(data.Name);
+            break;
         case "offer":
             handleOffer(data.Offer, data.Name);
             break;
@@ -186,31 +203,25 @@ hangUpBtn.addEventListener("click", function () {
 
 $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
-    var dest = $(this).data('user');
-    call(dest);
+    send({
+        type: "iniCall",
+        name: $(this).data('user')
+    });
 });
 
 $(document.body).on('click', '#respondCall', function (e) {
-    if (callOffer != null && callName != null) {
-        connectedUser = callName;
-        yourConn.setRemoteDescription(new RTCSessionDescription(callOffer));
-
-        yourConn.createAnswer(function (answer) {
-            yourConn.setLocalDescription(answer);
-            send({
-                type: "answer",
-                answer: answer
-            });
-        }, function (error) {
-            alert("Error when creating an answer");
-            console.log(error);
-        });
-    }
+    e.preventDefault();
+    call(initCallUser);
+    initCallUser = null;
 });
 
 $(document.body).on('click', '#ignoreCall', function (e) {
-    callOffer = null;
-    callName = null;
+    e.preventDefault();
+    send({
+        type: "initCallKO",
+        name: initCallUser
+    });
+    initCallUser = null;
 });
 
 $(document).ready(function () {
