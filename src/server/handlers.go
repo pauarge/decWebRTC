@@ -100,9 +100,13 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 	msg.HopLimit -= 1
 	if msg.Destination == g.name {
-		g.sockLock.Lock()
-		g.sock.WriteJSON(msg.Data)
-		g.sockLock.Unlock()
+		if g.sock != nil {
+			g.sockLock.Lock()
+			g.sock.WriteJSON(msg.Data)
+			g.sockLock.Unlock()
+		} else {
+			log.Println("Received a private message but could not forward it to GUI")
+		}
 	} else if msg.HopLimit > 0 {
 		log.Println("Forwaring private message")
 		g.SendPrivateMessage(msg)
