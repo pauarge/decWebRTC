@@ -41,7 +41,11 @@ function handleLogin() {
             stream = myStream;
             localVideo.srcObject = stream;
 
-            yourConn = new RTCPeerConnection({});
+            var configuration = {
+                "iceServers": [{"urls": "stun:stun.l.google.com:19302"}]
+            };
+
+            yourConn = new RTCPeerConnection(configuration);
             yourConn.addStream(stream);
 
             yourConn.ontrack = function (event) {
