@@ -204,7 +204,7 @@ hangUpBtn.addEventListener("click", function () {
 $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
     send({
-        type: "iniCall",
+        type: "initCall",
         name: $(this).data('user')
     });
 });
