@@ -82,11 +82,12 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		g.messages[common.MapKey{Origin: msg.Origin, MessageId: msg.Id}] = msg
 		g.messagesLock.Unlock()
 
-		g.nextHopLock.Lock()
-		g.nextHop[msg.Origin] = relay
-		g.nextHopLock.Unlock()
-
-		g.sendUserList()
+		if msg.Origin != g.name {
+			g.nextHopLock.Lock()
+			g.nextHop[msg.Origin] = relay
+			g.nextHopLock.Unlock()
+			g.sendUserList()
+		}
 
 		g.sendStatusPacket(relay)
 
