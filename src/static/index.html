@@ -5,6 +5,8 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+          type="text/css" rel="stylesheet" />
 </head>
 
 <body>
@@ -35,7 +37,7 @@
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog">
+<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -44,6 +46,21 @@
             <div class="modal-footer">
                 <button type="button" id="respondCall" class="btn btn-success">Respond</button>
                 <button type="button" id="ignoreCall" class="btn btn-danger">Ignore</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" id="callingModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Calling...</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">
+                    <span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                </p>
             </div>
         </div>
     </div>

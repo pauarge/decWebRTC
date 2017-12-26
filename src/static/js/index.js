@@ -129,7 +129,6 @@ function handleUsers(users) {
 
 function call(callToUsername) {
     if (callToUsername.length > 0 && callToUsername !== name) {
-
         connectedUser = callToUsername;
 
         // create an offer
@@ -156,7 +155,7 @@ conn.onopen = function () {
 
 //when we got a message from a signaling server
 conn.onmessage = function (msg) {
-    console.log("Got message", msg.data);
+    console.log(msg.data);
 
     var data = JSON.parse(msg.data);
 
@@ -212,6 +211,8 @@ hangUpBtn.addEventListener("click", function () {
 
 $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
+    $('.modal').modal('hide');
+    $('#callingModal').modal('show');
     send({
         type: "initCall",
         name: $(this).data('user')
