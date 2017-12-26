@@ -72,6 +72,12 @@ function handleInitCall(name) {
     initCallUser = name;
 }
 
+function handleInitCallKO() {
+    alert("Call was rejected");
+    $('.modal').modal('hide');
+    $('#modalUsers').modal('show');
+}
+
 function handleOffer(offer, name) {
     if (offer != null && name != null) {
         connectedUser = name;
@@ -162,6 +168,9 @@ conn.onmessage = function (msg) {
         case "initCall":
             handleInitCall(data.Name);
             break;
+        case "initCallKO":
+            handleInitCallKO();
+            break;
         case "offer":
             handleOffer(data.Offer, data.Name);
             break;
@@ -221,6 +230,8 @@ $(document.body).on('click', '#ignoreCall', function (e) {
         type: "initCallKO",
         name: initCallUser
     });
+    $('#modalIncomCall').hide();
+    $('#modalUsers').show();
     initCallUser = null;
 });
 
