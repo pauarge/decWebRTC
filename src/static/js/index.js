@@ -113,7 +113,7 @@ function handleLogin() {
                 callStatusBig.text("Call with " + targetUsername);
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
-                start();
+                startStopWatch();
             };
 
             yourConn.onicecandidate = function (event) {
@@ -250,6 +250,6 @@ $(document).ready(function () {
     callStatusBig.text(noCallPhrase);
     $('#timerBtn').prop('disabled', true);
     $('#hangUpBtn').prop('disabled', true);
-    show();
+    showStopWatch();
     $('#modalUsers').modal('show');
 });
