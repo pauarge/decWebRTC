@@ -38,6 +38,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			if connectedUser != "" {
 				req := common.JSONRequest{
 					Type: "leave",
+					Name: g.name,
 				}
 				msg := common.PrivateMessage{
 					Origin:      g.name,
@@ -85,7 +86,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		case "answer":
 			log.Println("Received an answer")
-			connectedUser = data.Name
+			connectedUser = data.Target
 			req = common.JSONRequest{
 				Type:   "answer",
 				Answer: data.Answer,
@@ -93,7 +94,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		case "candidate":
 			log.Println("Received a candidate")
-			connectedUser = data.Name
+			connectedUser = data.Target
 			req = common.JSONRequest{
 				Type:      "candidate",
 				Candidate: data.Candidate,
@@ -107,7 +108,10 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 		default:
-			log.Println("Did not understand the command")
+			req = common.JSONRequest{
+				Type: data.Type,
+				Name: g.name,
+			}
 			continue
 		}
 
