@@ -231,16 +231,15 @@ $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
     $('.modal').modal('hide');
     $('#callingModal').modal('show');
+    targetUsername = $(this).data('user');
     send({
-        type: "initCall",
-        name: $(this).data('user')
+        type: "initCall"
     });
 });
 
 $(document.body).on('click', '#respondCall', function (e) {
     e.preventDefault();
     call(targetUsername);
-    targetUsername = null;
 });
 
 $(document.body).on('click', '#ignoreCall', function (e) {
