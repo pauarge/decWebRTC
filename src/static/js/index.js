@@ -10,7 +10,7 @@ let mediaConstrains = {
 
 let localUsername = null;
 let targetUsername = null;
-let myPeerConnection = null;
+let myPeerConn = null;
 
 
 function log(text) {
@@ -39,7 +39,7 @@ function connect() {
     };
 
     connection.onmessage = function (e) {
-        console.log(e.data);
+        log(e.data);
         let data = JSON.parse(e.data);
 
         switch (data.Type) {
@@ -73,7 +73,7 @@ function connect() {
                 handleUsers(data.Users);
                 break;
             default:
-                console.log("Could not handle unknown type");
+                log("Could not handle unknown type");
                 break;
         }
     };
@@ -83,7 +83,6 @@ function connect() {
     };
 }
 
-let yourConn;
 let stream;
 
 let localVideo = document.querySelector('#localVideo');
@@ -105,18 +104,18 @@ function handleLogin() {
                 "iceServers": [{"urls": "stun:stun.l.google.com:19302"}]
             };
 
-            yourConn = new RTCPeerConnection(configuration);
-            yourConn.addStream(stream);
+            myPeerConn = new RTCPeerConnection(configuration);
+            myPeerConn.addStream(stream);
 
-            yourConn.ontrack = function (event) {
+            myPeerConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
-                callStatusBig.text("Call with <strong>" + targetUsername + "</strong>.");
+                callStatusBig.text("Call with " + targetUsername + ".");
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
                 startStopWatch();
             };
 
-            yourConn.onicecandidate = function (event) {
+            myPeerConn.onicecandidate = function (event) {
                 if (event.candidate) {
                     send({
                         type: "candidate",
@@ -144,36 +143,36 @@ function handleInitCallKO() {
 function handleOffer(offer, name) {
     if (offer != null && name != null) {
         targetUsername = name;
-        yourConn.setRemoteDescription(new RTCSessionDescription(offer));
+        myPeerConn.setRemoteDescription(new RTCSessionDescription(offer));
 
-        yourConn.createAnswer(function (answer) {
-            yourConn.setLocalDescription(answer);
+        myPeerConn.createAnswer(function (answer) {
+            myPeerConn.setLocalDescription(answer);
             send({
                 type: "answer",
                 answer: answer
             });
         }, function (error) {
             alert("Error when creating an answer");
-            console.log(error);
+            log(error);
         });
     }
 }
 
 function handleAnswer(answer) {
-    yourConn.setRemoteDescription(new RTCSessionDescription(answer));
+    myPeerConn.setRemoteDescription(new RTCSessionDescription(answer));
 }
 
 function handleCandidate(candidate) {
-    yourConn.addIceCandidate(new RTCIceCandidate(candidate));
+    myPeerConn.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
 function handleLeave() {
     targetUsername = null;
     remoteVideo.srcObject = null;
 
-    yourConn.close();
-    yourConn.onicecandidate = null;
-    yourConn.ontrack = null;
+    myPeerConn.close();
+    myPeerConn.onicecandidate = null;
+    myPeerConn.ontrack = null;
 
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
@@ -217,16 +216,16 @@ function call(callToUsername) {
         targetUsername = callToUsername;
 
         // create an offer
-        yourConn.createOffer(function (offer) {
+        myPeerConn.createOffer(function (offer) {
             send({
                 type: "offer",
                 offer: offer
             });
 
-            yourConn.setLocalDescription(offer);
+            myPeerConn.setLocalDescription(offer);
         }, function (error) {
             alert("Error when creating an offer");
-            console.log(error);
+            log(error);
         });
 
     } else {
@@ -243,9 +242,10 @@ $(document.body).on('click', '#hangUpBtn', function (e) {
 
 $(document.body).on('click', '.callLaunch', function (e) {
     e.preventDefault();
+    targetUsername = $(this).data('user');
+    $('#callingName').text(targetUsername);
     $('.modal').modal('hide');
     $('#callingModal').modal('show');
-    targetUsername = $(this).data('user');
     send({
         type: "initCall"
     });
