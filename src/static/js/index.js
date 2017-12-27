@@ -1,14 +1,99 @@
-var name;
-var connectedUser;
+"use strict";
+
+var connection = null;
+
+var wsAddr = "ws://127.0.0.1:8080/echo";
+var mediaConstrains = {
+    video: true,
+    audio: false
+};
+
+var localUsername = null;
+var targetUsername = null;
+var myPeerConnection = null;
+
+var hasAddTrack = null;
+
+
+function log(text) {
+    var time = new Date();
+    console.log("[" + time.toLocaleTimeString() + "] " + text);
+}
+
+function log_error(text) {
+    var time = new Date();
+    console.error("[" + time.toLocaleTimeString() + "] " + text);
+}
+
+function send(message) {
+    if (targetUsername) {
+        message.name = targetUsername;
+    }
+    if (connection.readyState === connection.CLOSED || connection.readyState === connection.CLOSING) {
+        connect();
+        // TODO: Retry after reconnection
+    } else {
+        var msgJSON = JSON.stringify(message);
+        log("Sending '" + message.type + "' message: " + msgJSON);
+        connection.send(msgJSON);
+    }
+}
+
+function connect() {
+    connection = new WebSocket(wsAddr);
+
+    connection.onopen = function (e) {
+        log("Connected to the signaling server");
+    };
+
+    connection.onmessage = function (e) {
+        console.log(e.data);
+        var data = JSON.parse(e.data);
+
+        switch (data.Type) {
+            case "login":
+                localUsername = data.Name;
+                handleLogin();
+                break;
+            case "initCall":
+                handleInitCall(data.Name);
+                break;
+            case "initCallKO":
+                handleInitCallKO();
+                break;
+            case "offer":
+                handleOffer(data.Offer, data.Name);
+                break;
+            case "answer":
+                handleAnswer(data.Answer);
+                break;
+            //when a remote peer sends an ice candidate to us
+            case "candidate":
+                handleCandidate(data.Candidate);
+                break;
+            case "leave":
+                handleLeave();
+                break;
+            case "alreadyGUI":
+                alert("GUI already opened in another browser or tab");
+                break;
+            case "users":
+                handleUsers(data.Users);
+                break;
+            default:
+                console.log("Could not handle unknown type");
+                break;
+        }
+    };
+
+    connection.onerror = function (err) {
+        log_error("Got connection error", err);
+    };
+}
+
 var yourConn;
 var stream;
 
-var mediaConstrains = {video: true, audio: false};
-
-var wsAddr = "ws://127.0.0.1:8080/echo";
-var conn = new WebSocket(wsAddr);
-
-var hangUpBtn = document.querySelector('#hangUpBtn');
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
 var callStatusBig = $('#callStatusBig');
@@ -17,23 +102,8 @@ var noCallPhrase = "Not in an active call.";
 
 var initCallUser;
 
-function send(message) {
-    if (connectedUser) {
-        message.name = connectedUser;
-    }
-    if (conn.readyState === conn.CLOSED || conn.readyState === conn.CLOSING) {
-        conn = new WebSocket(wsAddr);
-        conn.onopen = function () {
-            conn.send(JSON.stringify(message));
-            console.log("Reconnected to the signaling server");
-        };
-    } else {
-        conn.send(JSON.stringify(message));
-    }
-}
-
 function handleLogin() {
-    document.querySelector('#username-placeholder').textContent = name;
+    document.querySelector('#username-placeholder').textContent = localUsername;
 
     //getting local video stream
     navigator.mediaDevices.getUserMedia(mediaConstrains)
@@ -50,7 +120,7 @@ function handleLogin() {
 
             yourConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
-                callStatusBig.text("Call with " + connectedUser);
+                callStatusBig.text("Call with " + targetUsername);
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
                 start();
@@ -84,7 +154,7 @@ function handleInitCallKO() {
 
 function handleOffer(offer, name) {
     if (offer != null && name != null) {
-        connectedUser = name;
+        targetUsername = name;
         yourConn.setRemoteDescription(new RTCSessionDescription(offer));
 
         yourConn.createAnswer(function (answer) {
@@ -109,7 +179,7 @@ function handleCandidate(candidate) {
 }
 
 function handleLeave() {
-    connectedUser = null;
+    targetUsername = null;
     remoteVideo.srcObject = null;
 
     yourConn.close();
@@ -132,8 +202,8 @@ function handleUsers(users) {
 }
 
 function call(callToUsername) {
-    if (callToUsername.length > 0 && callToUsername !== name) {
-        connectedUser = callToUsername;
+    if (callToUsername.length > 0 && callToUsername !== localUsername) {
+        targetUsername = callToUsername;
 
         // create an offer
         yourConn.createOffer(function (offer) {
@@ -153,62 +223,10 @@ function call(callToUsername) {
     }
 }
 
-conn.onopen = function () {
-    console.log("Connected to the signaling server");
-};
-
-//when we got a message from a signaling server
-conn.onmessage = function (msg) {
-    console.log(msg.data);
-
-    var data = JSON.parse(msg.data);
-
-    switch (data.Type) {
-        case "login":
-            name = data.Name;
-            handleLogin();
-            break;
-        case "initCall":
-            handleInitCall(data.Name);
-            break;
-        case "initCallKO":
-            handleInitCallKO();
-            break;
-        case "offer":
-            handleOffer(data.Offer, data.Name);
-            break;
-        case "answer":
-            handleAnswer(data.Answer);
-            break;
-        //when a remote peer sends an ice candidate to us
-        case "candidate":
-            handleCandidate(data.Candidate);
-            break;
-        case "leave":
-            handleLeave();
-            break;
-        case "alreadyGUI":
-            alert("GUI already opened in another browser or tab");
-            break;
-        case "users":
-            handleUsers(data.Users);
-            break;
-        default:
-            console.log("Could not handle unknown type");
-            break;
-    }
-};
-
-conn.onerror = function (err) {
-    console.log("Got error", err);
-};
-
-
-//hang up
-hangUpBtn.addEventListener("click", function () {
+$(document.body).on('click', '#hangUpBtn', function (e) {
     send({
         type: "leave",
-        name: connectedUser
+        name: targetUsername
     });
     handleLeave();
 });
@@ -241,6 +259,7 @@ $(document.body).on('click', '#ignoreCall', function (e) {
 });
 
 $(document).ready(function () {
+    connect();
     callStatusBig.text(noCallPhrase);
     $('#timerBtn').prop('disabled', true);
     $('#hangUpBtn').prop('disabled', true);
