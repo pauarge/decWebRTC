@@ -26,9 +26,8 @@ function log_error(text) {
 }
 
 function send(message) {
-    if (targetUsername) {
-        message.name = targetUsername;
-    }
+    message.name = localUsername;
+    message.target = targetUsername;
     if (connection.readyState === connection.CLOSED || connection.readyState === connection.CLOSING) {
         connect();
         // TODO: Retry after reconnection
@@ -100,8 +99,6 @@ var callStatusBig = $('#callStatusBig');
 
 var noCallPhrase = "Not in an active call.";
 
-var initCallUser;
-
 function handleLogin() {
     document.querySelector('#username-placeholder').textContent = localUsername;
 
@@ -143,7 +140,7 @@ function handleLogin() {
 function handleInitCall(name) {
     $('.modal').modal('hide');
     $('#modalIncomCall').modal('show');
-    initCallUser = name;
+    targetUsername = name;
 }
 
 function handleInitCallKO() {
@@ -225,8 +222,7 @@ function call(callToUsername) {
 
 $(document.body).on('click', '#hangUpBtn', function (e) {
     send({
-        type: "leave",
-        name: targetUsername
+        type: "leave"
     });
     handleLeave();
 });
@@ -243,19 +239,18 @@ $(document.body).on('click', '.callLaunch', function (e) {
 
 $(document.body).on('click', '#respondCall', function (e) {
     e.preventDefault();
-    call(initCallUser);
-    initCallUser = null;
+    call(targetUsername);
+    targetUsername = null;
 });
 
 $(document.body).on('click', '#ignoreCall', function (e) {
     e.preventDefault();
     send({
-        type: "initCallKO",
-        name: initCallUser
+        type: "initCallKO"
     });
     $('#modalIncomCall').modal('hide');
     $('#modalUsers').modal('show');
-    initCallUser = null;
+    targetUsername = null;
 });
 
 $(document).ready(function () {
