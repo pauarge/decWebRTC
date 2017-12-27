@@ -60,66 +60,28 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		var req common.JSONRequest
 		switch data.Type {
-		case "initCall":
-			log.Println("Got init call")
-			req = common.JSONRequest{
-				Type: "initCall",
-				Name: g.name,
-			}
-
-		case "initCallKO":
-			log.Println("Got init call KO")
-			req = common.JSONRequest{
-				Type: "initCallKO",
-				Name: g.name,
-			}
-
-		case "offer":
-			log.Println("Sending offer to " + data.Name)
-			req = common.JSONRequest{
-				Type:  "offer",
-				Offer: data.Offer,
-				Name:  g.name,
-			}
 
 		case "answer":
 			log.Println("Received an answer")
 			connectedUser = data.Target
-			req = common.JSONRequest{
-				Type:   "answer",
-				Answer: data.Answer,
-			}
 
 		case "candidate":
 			log.Println("Received a candidate")
 			connectedUser = data.Target
-			req = common.JSONRequest{
-				Type:      "candidate",
-				Candidate: data.Candidate,
-			}
 
 		case "leave":
-			log.Println("Received a leave")
 			connectedUser = ""
-			req = common.JSONRequest{
-				Type: "leave",
-			}
 
 		default:
-			req = common.JSONRequest{
-				Type: data.Type,
-				Name: g.name,
-			}
-			continue
+			log.Println("Received", data.Type)
 		}
 
 		msg := common.PrivateMessage{
 			Origin:      g.name,
 			Destination: data.Target,
 			HopLimit:    common.MaxHops,
-			Data:        req,
+			Data:        data,
 		}
 		g.SendPrivateMessage(msg)
 	}
