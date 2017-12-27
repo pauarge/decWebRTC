@@ -79,7 +79,7 @@ function connect() {
     };
 
     connection.onerror = function (err) {
-        log_error("Got connection error", err);
+        log("Got connection error", err);
     };
 }
 
@@ -125,9 +125,7 @@ function handleLogin() {
                 }
             };
         })
-        .catch(function (err) {
-            console.log(err);
-        });
+        .catch(handleGetUserMediaError);
 }
 
 function handleInitCall(name) {
@@ -179,7 +177,7 @@ function handleLeave() {
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
     callStatusBig.text(noCallPhrase);
-    reset();
+    resetStopWatch();
     handleLogin();
 }
 
@@ -189,6 +187,28 @@ function handleUsers(users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
+}
+
+function handleGetUserMediaError(e) {
+    log(e);
+    switch (e.name) {
+        case "NotFoundError":
+            alert("Unable to open your call because no camera and/or microphone" +
+                "were found.");
+            break;
+        case "SecurityError":
+        case "PermissionDeniedError":
+            // Do nothing; this is the same as the user canceling the call.
+            break;
+        default:
+            alert("Error opening your camera and/or microphone: " + e.message);
+            break;
+    }
+
+    // Make sure we shut down our end of the RTCPeerConnection so we're
+    // ready to try again.
+
+    // closeVideoCall();
 }
 
 function call(callToUsername) {
