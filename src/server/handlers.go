@@ -106,6 +106,16 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 			g.sockLock.Unlock()
 		} else {
 			log.Println("Received a private message but could not forward it to GUI")
+			res := common.PrivateMessage{
+				Origin: g.name,
+				Destination: msg.Origin,
+				HopLimit: common.MaxHops,
+				Data: common.JSONRequest{
+					Type: "initCallKO",
+					Name: g.name,
+				},
+			}
+			g.SendPrivateMessage(res)
 		}
 	} else if msg.HopLimit > 0 {
 		log.Println("Forwaring private message")
