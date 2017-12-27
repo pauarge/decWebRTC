@@ -113,7 +113,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 
 		msg := common.PrivateMessage{
 			Origin:      g.name,
-			Destination: data.Name,
+			Destination: data.Target,
 			HopLimit:    common.MaxHops,
 			Data:        req,
 		}

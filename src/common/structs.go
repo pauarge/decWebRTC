@@ -46,6 +46,7 @@ type GossipPacket struct {
 type JSONRequest struct {
 	Type      string
 	Name      string
+	Target    string
 	Users     []string
 	Offer     *json.RawMessage
 	Answer    *json.RawMessage
