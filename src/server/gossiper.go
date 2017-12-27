@@ -6,7 +6,6 @@ import (
 	"log"
 	"sync"
 	"github.com/pauarge/decWebRTC/src/common"
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
@@ -26,7 +25,6 @@ type Gossiper struct {
 	wantLock     *sync.RWMutex
 
 	// GUI
-	router   *mux.Router
 	sock     *websocket.Conn
 	sockLock *sync.RWMutex
 }
@@ -54,7 +52,6 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 		nextHopLock:  &sync.RWMutex{},
 		peersLock:    &sync.RWMutex{},
 		wantLock:     &sync.RWMutex{},
-		router:       mux.NewRouter(),
 		sockLock:     &sync.RWMutex{},
 	}
 }
