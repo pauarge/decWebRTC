@@ -107,6 +107,8 @@ function handleLogin() {
             myPeerConn = new RTCPeerConnection(configuration);
             myPeerConn.addStream(stream);
 
+            myPeerConn.onremovestream = handleRemoveStreamEvent;
+
             myPeerConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
                 callStatusBig.text("Call with " + targetUsername + ".");
@@ -168,7 +170,11 @@ function handleCandidate(candidate) {
 
 function handleLeave() {
     targetUsername = null;
-    remoteVideo.srcObject = null;
+
+    if (remoteVideo.srcObject) {
+        remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+    remoteVideo.src = null;
 
     myPeerConn.close();
     myPeerConn.onicecandidate = null;
@@ -208,8 +214,14 @@ function handleGetUserMediaError(e) {
     // Make sure we shut down our end of the RTCPeerConnection so we're
     // ready to try again.
 
-    // closeVideoCall();
+    handleLeave();
 }
+
+function handleRemoveStreamEvent(event) {
+    log("*** Stream removed");
+    handleLeave();
+}
+
 
 function call(callToUsername) {
     if (callToUsername.length > 0 && callToUsername !== localUsername) {
@@ -234,9 +246,9 @@ function call(callToUsername) {
 }
 
 $(document.body).on('click', '#hangUpBtn', function (e) {
-    send({
+    /*send({
         type: "leave"
-    });
+    });*/
     handleLeave();
 });
 
