@@ -110,7 +110,7 @@ function handleLogin() {
 
             yourConn.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
-                callStatusBig.text("Call with " + targetUsername);
+                callStatusBig.text("Call with <strong>" + targetUsername + "</strong>.");
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
                 startStopWatch();
@@ -129,6 +129,7 @@ function handleLogin() {
 }
 
 function handleInitCall(name) {
+    $('#incomCallName').text(name);
     $('.modal').modal('hide');
     $('#modalIncomCall').modal('show');
     targetUsername = name;
