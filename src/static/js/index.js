@@ -1,28 +1,21 @@
 "use strict";
 
-var connection = null;
+let connection = null;
 
-var wsAddr = "ws://127.0.0.1:8080/echo";
-var mediaConstrains = {
+let wsAddr = "ws://127.0.0.1:8080/echo";
+let mediaConstrains = {
     video: true,
     audio: false
 };
 
-var localUsername = null;
-var targetUsername = null;
-var myPeerConnection = null;
-
-var hasAddTrack = null;
+let localUsername = null;
+let targetUsername = null;
+let myPeerConnection = null;
 
 
 function log(text) {
-    var time = new Date();
+    let time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
-}
-
-function log_error(text) {
-    var time = new Date();
-    console.error("[" + time.toLocaleTimeString() + "] " + text);
 }
 
 function send(message) {
@@ -32,7 +25,7 @@ function send(message) {
         connect();
         // TODO: Retry after reconnection
     } else {
-        var msgJSON = JSON.stringify(message);
+        let msgJSON = JSON.stringify(message);
         log("Sending '" + message.type + "' message: " + msgJSON);
         connection.send(msgJSON);
     }
@@ -47,7 +40,7 @@ function connect() {
 
     connection.onmessage = function (e) {
         console.log(e.data);
-        var data = JSON.parse(e.data);
+        let data = JSON.parse(e.data);
 
         switch (data.Type) {
             case "login":
@@ -90,14 +83,14 @@ function connect() {
     };
 }
 
-var yourConn;
-var stream;
+let yourConn;
+let stream;
 
-var localVideo = document.querySelector('#localVideo');
-var remoteVideo = document.querySelector('#remoteVideo');
-var callStatusBig = $('#callStatusBig');
+let localVideo = document.querySelector('#localVideo');
+let remoteVideo = document.querySelector('#remoteVideo');
+let callStatusBig = $('#callStatusBig');
 
-var noCallPhrase = "Not in an active call.";
+let noCallPhrase = "Not in an active call.";
 
 function handleLogin() {
     document.querySelector('#username-placeholder').textContent = localUsername;
@@ -108,7 +101,7 @@ function handleLogin() {
             stream = myStream;
             localVideo.srcObject = stream;
 
-            var configuration = {
+            let configuration = {
                 "iceServers": [{"urls": "stun:stun.l.google.com:19302"}]
             };
 
