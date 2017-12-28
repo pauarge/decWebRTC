@@ -1,7 +1,9 @@
 "use strict";
 
 let connection = null;
-let dataChannel = null;
+let peerConnection = null;
+let sendChannel = null;
+let receiveChannel = null;
 
 let wsAddr = "ws://127.0.0.1:8080/echo";
 let mediaConstrains = {
@@ -11,7 +13,6 @@ let mediaConstrains = {
 
 let localUsername = null;
 let targetUsername = null;
-let myPeerConn = null;
 
 
 function log(text) {
@@ -105,15 +106,18 @@ function handleLogin() {
                 "iceServers": [{"urls": "stun:stun.l.google.com:19302"}],
             };
 
-            myPeerConn = new RTCPeerConnection(configuration);
+            peerConnection = new RTCPeerConnection(configuration);
 
-            openDataChannel();
+            sendChannel = peerConnection.createDataChannel("sendChannel");
+            sendChannel.ononpen = handleSendChannelStatusChange;
+            sendChannel.onclose = handleSendChannelStatusChange;
 
-            myPeerConn.addStream(stream);
+            peerConnection.addStream(stream);
 
-            myPeerConn.onremovestream = handleRemoveStreamEvent;
+            peerConnection.onremovestream = handleRemoveStreamEvent;
+            peerConnection.ondatachannel = receiveChannelCallback;
 
-            myPeerConn.ontrack = function (event) {
+            peerConnection.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
                 callStatusBig.text("Call with " + targetUsername + ".");
                 $('.modal').modal('hide');
@@ -121,7 +125,7 @@ function handleLogin() {
                 startStopWatch();
             };
 
-            myPeerConn.onicecandidate = function (event) {
+            peerConnection.onicecandidate = function (event) {
                 if (event.candidate) {
                     send({
                         type: "candidate",
@@ -149,10 +153,10 @@ function handleInitCallKO() {
 function handleOffer(offer, name) {
     if (offer != null && name != null) {
         targetUsername = name;
-        myPeerConn.setRemoteDescription(new RTCSessionDescription(offer));
+        peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
-        myPeerConn.createAnswer(function (answer) {
-            myPeerConn.setLocalDescription(answer);
+        peerConnection.createAnswer(function (answer) {
+            peerConnection.setLocalDescription(answer);
             send({
                 type: "answer",
                 answer: answer
@@ -165,20 +169,20 @@ function handleOffer(offer, name) {
 }
 
 function handleAnswer(answer) {
-    myPeerConn.setRemoteDescription(new RTCSessionDescription(answer));
+    peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 }
 
 function handleCandidate(candidate) {
-    myPeerConn.addIceCandidate(new RTCIceCandidate(candidate));
+    peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
 function handleLeave() {
     targetUsername = null;
     remoteVideo.srcObject.getTracks().forEach(track => track.stop());
 
-    myPeerConn.close();
-    myPeerConn.onicecandidate = null;
-    myPeerConn.ontrack = null;
+    peerConnection.close();
+    peerConnection.onicecandidate = null;
+    peerConnection.ontrack = null;
 
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
@@ -222,35 +226,48 @@ function handleRemoveStreamEvent(event) {
     handleLeave();
 }
 
-function openDataChannel() {
-    let dataChannelOptions = {
-        reliable: true
-    };
-
-    dataChannel = myPeerConn.createDataChannel("chat", dataChannelOptions);
-
-    dataChannel.onerror = function (error) {
-        console.log("Error:", error);
-    };
-
-    dataChannel.onmessage = function (event) {
-        console.log("Got message:", event.data);
-    };
+function receiveChannelCallback(event) {
+    receiveChannel = event.channel;
+    receiveChannel.onmessage = handleReceiveMessage;
+    receiveChannel.onopen = handleReceiveChannelStatusChange;
+    receiveChannel.onclose = handleReceiveChannelStatusChange;
 }
 
+function handleSendChannelStatusChange(event) {
+    if (sendChannel) {
+        let state = sendChannel.readyState;
+
+        if (state === "open") {
+            log("Channel opened");
+        } else {
+            log("Channel closed");
+        }
+    }
+}
+
+function handleReceiveChannelStatusChange(event) {
+    if (receiveChannel) {
+        console.log("Receive channel's status has changed to " +
+            receiveChannel.readyState);
+    }
+}
+
+function handleReceiveMessage(event) {
+   log("Got message", event.data);
+}
 
 function call(callToUsername) {
     if (callToUsername.length > 0 && callToUsername !== localUsername) {
         targetUsername = callToUsername;
 
         // create an offer
-        myPeerConn.createOffer(function (offer) {
+        peerConnection.createOffer(function (offer) {
             send({
                 type: "offer",
                 offer: offer
             });
 
-            myPeerConn.setLocalDescription(offer);
+            peerConnection.setLocalDescription(offer);
         }, function (error) {
             alert("Error when creating an offer");
             log(error);
@@ -336,7 +353,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     let key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
         let message = this.value;
-        dataChannel.send(message);
+        sendChannel.send(message);
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
