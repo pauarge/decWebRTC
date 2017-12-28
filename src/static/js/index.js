@@ -60,7 +60,6 @@ function connect() {
             case "answer":
                 handleAnswer(data.Answer);
                 break;
-            //when a remote peer sends an ice candidate to us
             case "candidate":
                 handleCandidate(data.Candidate);
                 break;
@@ -234,6 +233,15 @@ function receiveChannelCallback(event) {
         console.log('Data channel is open and ready to be used.');
     };
     event.channel.onmessage = function (e) {
+        let currentTime = new Date();
+        let hours = currentTime.getHours();
+        let minutes = currentTime.getMinutes();
+        let message = this.value;
+        console.log("Sending message", message);
+        dataChannel.send(message);
+        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
+        $(".feed").scrollTop($(".feed")[0].scrollHeight);
+        this.value = "";
         log("DC:" + e.data);
     }
 }
@@ -248,17 +256,6 @@ function handleSendChannelStatusChange(event) {
             log("Channel closed");
         }
     }
-}
-
-function handleReceiveChannelStatusChange(event) {
-    if (receiveChannel) {
-        console.log("Receive channel's status has changed to " +
-            receiveChannel.readyState);
-    }
-}
-
-function handleReceiveMessage(event) {
-    log("Got message", event);
 }
 
 function call(callToUsername) {
@@ -350,21 +347,21 @@ $(document).ready(function () {
         });
 });
 
-$(".feed").scrollTop($(".feed")[0].scrollHeight);
 document.getElementById("message").addEventListener('keypress', function (e) {
     let currentTime = new Date();
     let hours = currentTime.getHours();
     let minutes = currentTime.getMinutes();
     let key = e.which || e.keyCode;
-    if (key == 13) { // 13 is enter
+    if (key === 13) {
         let message = this.value;
         console.log("Sending message", message);
         dataChannel.send(message);
-        $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
+        $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>" + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
     }
 });
+
 $('#chathead').click(function () {
     $('#togglearea').slideToggle();
 });
