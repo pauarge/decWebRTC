@@ -166,15 +166,6 @@ hr {
 
 }
 
-.me {
-    animation: intro 1s;
-}
-
-.other {
-    animation: intro2 1s;
-    position: relative;
-}
-
 .other .message {
     min-height: 30px;
     margin-left: 30px;
