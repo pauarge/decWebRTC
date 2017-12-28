@@ -177,7 +177,10 @@ function handleCandidate(candidate) {
 
 function handleLeave() {
     targetUsername = null;
-    remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+
+    if (remoteVideo != null) {
+        remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
 
     peerConnection.close();
     peerConnection.onicecandidate = null;
