@@ -94,7 +94,6 @@ let noCallPhrase = "Not in an active call.";
 function handleLogin() {
     document.querySelector('#username-placeholder').textContent = localUsername;
 
-    //getting local video stream
     navigator.mediaDevices.getUserMedia(mediaConstrains)
         .then(function (myStream) {
             stream = myStream;
@@ -113,7 +112,7 @@ function handleLogin() {
 
             peerConnection.addStream(stream);
 
-            peerConnection.onremovestream = handleRemoveStreamEvent;
+            peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = receiveChannelCallback;
 
             peerConnection.ontrack = function (event) {
@@ -137,8 +136,8 @@ function handleLogin() {
 }
 
 function handleInitCall(name) {
-    $('#incomCallName').text(name);
     $('.modal').modal('hide');
+    $('#incomCallName').text(name);
     $('#modalIncomCall').modal('show');
     targetUsername = name;
 }
@@ -150,21 +149,20 @@ function handleInitCallKO() {
 }
 
 function handleOffer(offer, name) {
-    if (offer != null && name != null) {
-        targetUsername = name;
-        peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    targetUsername = name;
+    peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
-        peerConnection.createAnswer(function (answer) {
-            peerConnection.setLocalDescription(answer);
-            send({
-                type: "answer",
-                answer: answer
-            });
-        }, function (error) {
-            alert("Error when creating an answer");
-            log(error);
+    peerConnection.createAnswer(function (answer) {
+        peerConnection.setLocalDescription(answer);
+        send({
+            type: "answer",
+            answer: answer
         });
-    }
+    }, function (error) {
+        alert("Error when creating an answer");
+        targetUsername = null;
+        log(error);
+    });
 }
 
 function handleAnswer(answer) {
@@ -216,14 +214,6 @@ function handleGetUserMediaError(e) {
             break;
     }
 
-    // Make sure we shut down our end of the RTCPeerConnection so we're
-    // ready to try again.
-
-    handleLeave();
-}
-
-function handleRemoveStreamEvent(event) {
-    log("*** Stream removed");
     handleLeave();
 }
 
@@ -352,7 +342,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
         let message = this.value;
         log("Sending message", message);
         dataChannel.send(message);
-        $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>" + hours + ":" + minutes + " PM</div></div></div>");
+        $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>" + hours + ":" + minutes + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
     }
