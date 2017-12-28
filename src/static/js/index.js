@@ -237,23 +237,22 @@ function receiveChannelCallback(event) {
         let hours = currentTime.getHours();
         let minutes = currentTime.getMinutes();
         let message = this.value;
-        console.log("Sending message", message);
+        log("Sending message", message);
         dataChannel.send(message);
         $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
-        log("DC:" + e.data);
     }
 }
 
 function handleSendChannelStatusChange(event) {
-    if (sendChannel) {
-        let state = sendChannel.readyState;
-
+    if (dataChannel) {
+        let state = dataChannel.readyState;
         if (state === "open") {
             log("Channel opened");
         } else {
             log("Channel closed");
+            dataChannel = null;
         }
     }
 }
