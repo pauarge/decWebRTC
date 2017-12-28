@@ -228,9 +228,9 @@ function handleRemoveStreamEvent(event) {
 }
 
 function receiveChannelCallback(event) {
-    console.log('peerConnection.ondatachannel event fired.');
+    log('peerConnection.ondatachannel event fired.');
     event.channel.onopen = function () {
-        console.log('Data channel is open and ready to be used.');
+        log('Data channel is open and ready to be used.');
     };
     event.channel.onmessage = function (e) {
         let currentTime = new Date();
@@ -350,7 +350,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     let key = e.which || e.keyCode;
     if (key === 13) {
         let message = this.value;
-        console.log("Sending message", message);
+        log("Sending message", message);
         dataChannel.send(message);
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>" + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
