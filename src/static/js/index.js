@@ -236,12 +236,8 @@ function receiveChannelCallback(event) {
         let currentTime = new Date();
         let hours = currentTime.getHours();
         let minutes = currentTime.getMinutes();
-        let message = this.value;
-        log("Sending message", message);
-        dataChannel.send(message);
         $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
-        this.value = "";
     }
 }
 
