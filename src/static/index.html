@@ -5,23 +5,66 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="lib/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-          type="text/css" rel="stylesheet" />
 </head>
 
 <body>
 
 <video id="remoteVideo" autoplay playsinline></video>
 
-<div class="content">
+<div class="hoverContent">
     <video id="localVideo" autoplay playsinline></video>
-    <h1 id="callStatusBig"></h1>
-    <p>Logged in as <b><span id="username-placeholder"></span></b>.</p>
-    <p>
-        <button id="timerBtn" class="btn-default btn"><span id="time"></span></button>
-        <button id="hangUpBtn" class="btn-danger btn">Hang Up</button>
-    </p>
+
+    <div class="hoverControls">
+        <h1 id="callStatusBig"></h1>
+        <p>Logged in as <b><span id="username-placeholder"></span></b>.</p>
+        <p>
+            <button id="timerBtn" class="btn-default btn">
+                <span class="glyphicon glyphicon-time"></span>
+                <span id="time"></span></button>
+            <button id="hangUpBtn" class="btn-danger btn">
+                <span class="glyphicon glyphicon-earphone"></span>
+                Hang Up
+            </button>
+        </p>
+    </div>
 </div>
+
+<div class="chatarea">
+    <div class="chat">
+        <div class="chathead" id="chathead">Chat</div>
+        <div id="togglearea">
+            <div class="feed">
+                <div class="me">
+                    <div class="message">
+                        It's actually pretty good
+                        <div class="meta">
+                            11/19/13, 10:10 PM
+                        </div>
+                    </div>
+                </div>
+                <div class="other">
+                    <div class="message">
+                        :)
+                        <div class="meta">
+                            Jack • 11/19/13, 10:10 PM
+                        </div>
+                    </div>
+                </div>
+                <div class="me">
+                    <div class="message">
+                        This chat actually works! Type a message below to see the hangout in action!
+                        <div class="meta">
+                            11/19/13, 10:11 PM
+                        </div>
+                    </div>
+                </div>
+            </div><!-- feed -->
+            <div class="messagebox">
+                <input type="text" id="message">
+            </div>
+        </div>
+    </div><!-- chatbox -->
+</div><!-- chat container -->
 
 <div class="modal fade" id="modalUsers" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
@@ -37,7 +80,8 @@
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog" data-backdrop="static"
+     data-keyboard="false">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -51,7 +95,8 @@
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" id="callingModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal fade bs-example-modal-sm" id="callingModal" tabindex="-1" role="dialog" data-backdrop="static"
+     data-keyboard="false">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -67,7 +112,7 @@
 </div>
 
 <script src="lib/adapter.min.js"></script>
-<script src="lib/jquery-3.2.1.min.js"></script>
+<script src="lib/jquery-3.2.1.slim.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>
 
 <script src="js/stopwatch.js"></script>

@@ -1,13 +1,13 @@
 #remoteVideo {
-    position: fixed;
+    position: absolute;
     right: 0;
     bottom: 0;
     min-width: 100%;
     min-height: 100%;
 }
 
-.content {
-    position: fixed;
+.hoverContent {
+    position: absolute;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     color: #f1f1f1;
@@ -15,22 +15,21 @@
     padding: 20px;
 }
 
-.content input {
-    color: #000000;
+.hoverControls {
+    margin-left: 225px;
 }
 
 #localVideo {
     width: auto;
     height: 150px;
     position: absolute;
-    top: 15px;
-    right: 15px;
 }
 
 .glyphicon-spin {
     font-size: xx-large;
     animation: spin 1000ms infinite linear;
 }
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -41,6 +40,7 @@
         transform: rotate(359deg);
     }
 }
+
 @keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -50,4 +50,171 @@
         -webkit-transform: rotate(359deg);
         transform: rotate(359deg);
     }
+}
+
+.profilePic {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+    position: absolute;
+    top: 130px;
+    left: 50%;
+    margin-left: -40px;
+}
+
+.infopadding {
+    height: 40px;
+}
+
+.title {
+    text-align: center;
+}
+
+.morestuff {
+    text-align: center;
+    padding: 10px;
+}
+
+.corin-checkbox {
+    visibility: hidden;
+}
+
+.corin-checkbox-container {
+    position: relative;
+    display: inline-block;
+}
+
+.corin-checkbox-sub {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+}
+
+.corin-checkbox-sub.unchecked {
+    background: #f2f2f2;
+    border: 2px solid #808080;
+}
+
+.corin-checkbox-sub.checked {
+    background: #0585D6;
+    content: "\0252";
+    border: 2px solid #0585D6;
+}
+
+hr {
+    border: 0px;
+    height: 1.2px;
+    width: 100%;
+    background-color: #C9C9C9;
+}
+
+.chatarea {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.chat {
+    margin: 0px;
+    padding: 0px;
+    width: 250px;
+    float: right;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;;
+    overflow: hidden;
+    margin-right: 30px;
+    box-shadow: 0px 1px 5px 0px rgba(50, 50, 50, 0.75);
+}
+
+.chathead {
+    width: 250px;
+    background-color: #1a1a1a;
+    height: 40px;
+    color: #ffffff;
+    padding-top: 13px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.chathead img {
+    width: 20px;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+
+.feed {
+    padding: 10px;
+    background-color: #f2f2f2;
+    max-height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.feed img {
+    width: 100%;
+}
+
+.other, .me {
+    position: relative;
+    margin-top: 10px;
+
+}
+
+.me {
+    -webkit-animation: intro 1s;
+    animation: intro 1s;
+}
+
+.other {
+    -webkit-animation: intro2 1s;
+    animation: intro2 1s;
+    position: relative;
+}
+
+.other {
+}
+
+.other .message {
+    min-height: 30px;
+    margin-left: 30px;
+    border: 1px solid #E0E0E0;
+    background-color: #D1ED9E;
+    padding: 10px;
+    color: #1a1a1a;
+}
+
+.me .message {
+    min-height: 30px;
+    max-width: 200px;
+    border: 1px solid #E0E0E0;
+    background-color: #AEC5D6;
+    padding: 10px;
+    color: #1a1a1a;
+}
+
+.meta {
+    padding-top: 5px;
+    font-size: 12px;
+    color: #808080;
+}
+
+.messagebox {
+    min-height: 30px;
+    width: 250px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #ffffff;
+}
+
+.messagebox input {
+    width: 250px;
+    box-sizing: border-box;
+    height: 100%;
+    border: 0px;
+    padding-left: 10px;
 }
