@@ -238,6 +238,7 @@ function receiveChannelCallback(event) {
         let minutes = currentTime.getMinutes();
         $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
+        $('#togglearea').slideDown();
     }
 }
 
