@@ -281,16 +281,41 @@ $(document).ready(function () {
     $('#hangUpBtn').prop('disabled', true);
     showStopWatch();
     $('#modalUsers').modal('show');
+
+    $('[data-corin-checkbox="true"]')
+        .addClass('corin-checkbox')
+        .wrap('<div class="corin-checkbox-container"></div>')
+        .after('<div class="corin-checkbox-sub"></div>')
+        .each(function () {
+            if (this.checked) {
+                $(this).siblings('.corin-checkbox-sub').addClass('checked');
+            } else {
+                $(this).siblings('.corin-checkbox-sub').addClass('unchecked');
+            }
+        })
+        .parent()
+        .on('click', '.corin-checkbox-sub', function () {
+            let theCheckbox = $(this).siblings('.corin-checkbox');
+            let isChecked = theCheckbox.is(':checked');
+
+            if (isChecked) {
+                theCheckbox.prop('checked', false);
+                $(this).removeClass('checked').addClass('unchecked');
+            } else {
+                theCheckbox.prop('checked', true);
+                $(this).removeClass('unchecked').addClass('checked');
+            }
+        });
 });
 
 $(".feed").scrollTop($(".feed")[0].scrollHeight);
 document.getElementById("message").addEventListener('keypress', function (e) {
-    var currentTime = new Date()
-    var hours = currentTime.getHours()
-    var minutes = currentTime.getMinutes()
-    var key = e.which || e.keyCode;
+    let currentTime = new Date();
+    let hours = currentTime.getHours();
+    let minutes = currentTime.getMinutes();
+    let key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
-        var message = this.value;
+        let message = this.value;
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
@@ -299,33 +324,3 @@ document.getElementById("message").addEventListener('keypress', function (e) {
 $('#chathead').click(function () {
     $('#togglearea').slideToggle();
 });
-(function ($) {
-    $(document).ready(function () {
-        $('[data-corin-checkbox="true"]')
-            .addClass('corin-checkbox')
-            .wrap('<div class="corin-checkbox-container"></div>')
-            .after('<div class="corin-checkbox-sub"></div>')
-            .each(function () {
-                if (this.checked) {
-                    $(this).siblings('.corin-checkbox-sub').addClass('checked');
-                } else {
-                    $(this).siblings('.corin-checkbox-sub').addClass('unchecked');
-                }
-            })
-            .parent()
-            .on('click', '.corin-checkbox-sub', function () {
-                var theCheckbox = $(this).siblings('.corin-checkbox');
-                var isChecked = theCheckbox.is(':checked');
-
-                if (isChecked) {
-                    theCheckbox.prop('checked', false);
-                    $(this).removeClass('checked').addClass('unchecked');
-                } else {
-                    theCheckbox.prop('checked', true);
-                    $(this).removeClass('unchecked').addClass('checked');
-                }
-
-            });
-    });
-
-}(jQuery));
