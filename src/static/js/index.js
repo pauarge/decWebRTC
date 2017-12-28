@@ -2,8 +2,7 @@
 
 let connection = null;
 let peerConnection = null;
-let sendChannel = null;
-let receiveChannel = null;
+let dataChannel = null;
 
 let wsAddr = "ws://127.0.0.1:8080/echo";
 let mediaConstrains = {
@@ -108,9 +107,10 @@ function handleLogin() {
 
             peerConnection = new RTCPeerConnection(configuration);
 
-            sendChannel = peerConnection.createDataChannel("sendChannel");
-            sendChannel.ononpen = handleSendChannelStatusChange;
-            sendChannel.onclose = handleSendChannelStatusChange;
+            dataChannel = peerConnection.createDataChannel("dataChannel", {reliable: true});
+            dataChannel.ononpen = handleSendChannelStatusChange;
+            dataChannel.onclose = handleSendChannelStatusChange;
+            dataChannel.onerror = handleSendChannelStatusChange;
 
             peerConnection.addStream(stream);
 
@@ -169,10 +169,12 @@ function handleOffer(offer, name) {
 }
 
 function handleAnswer(answer) {
+    log("Processed answer");
     peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 }
 
 function handleCandidate(candidate) {
+    log("Added ICE candidate");
     peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
@@ -227,10 +229,13 @@ function handleRemoveStreamEvent(event) {
 }
 
 function receiveChannelCallback(event) {
-    receiveChannel = event.channel;
-    receiveChannel.onmessage = handleReceiveMessage;
-    receiveChannel.onopen = handleReceiveChannelStatusChange;
-    receiveChannel.onclose = handleReceiveChannelStatusChange;
+    console.log('peerConnection.ondatachannel event fired.');
+    event.channel.onopen = function () {
+        console.log('Data channel is open and ready to be used.');
+    };
+    event.channel.onmessage = function (e) {
+        log("DC:" + e.data);
+    }
 }
 
 function handleSendChannelStatusChange(event) {
@@ -253,7 +258,7 @@ function handleReceiveChannelStatusChange(event) {
 }
 
 function handleReceiveMessage(event) {
-   log("Got message", event.data);
+    log("Got message", event);
 }
 
 function call(callToUsername) {
@@ -353,7 +358,8 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     let key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
         let message = this.value;
-        sendChannel.send(message);
+        console.log("Sending message", message);
+        dataChannel.send(message);
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
