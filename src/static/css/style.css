@@ -30,6 +30,14 @@
     animation: spin 1000ms infinite linear;
 }
 
+.modal-sm .modal-header {
+    border-bottom: none;
+}
+
+.modal-sm .modal-footer {
+    border-top: none;
+}
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);

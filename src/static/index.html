@@ -20,7 +20,12 @@
         <p>
             <button id="timerBtn" class="btn-default btn">
                 <span class="glyphicon glyphicon-time"></span>
-                <span id="time"></span></button>
+                <span id="time"></span>
+            </button>
+            <button id="sendFileLaunch" class="btn-primary btn">
+                <span class="glyphicon glyphicon-floppy-open"></span>
+                Send file
+            </button>
             <button id="hangUpBtn" class="btn-danger btn">
                 <span class="glyphicon glyphicon-earphone"></span>
                 Hang Up
@@ -55,12 +60,11 @@
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" id="modalIncomCall" tabindex="-1" role="dialog" data-backdrop="static"
-     data-keyboard="false">
+<div class="modal fade" id="modalIncomCall" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Incoming call from <span id="incomCallName"></span></h4>
+                <h4 class="modal-title text-center">Incoming call from <span id="incomCallName"></span></h4>
             </div>
             <div class="modal-footer">
                 <button type="button" id="respondCall" class="btn btn-success">Respond</button>
@@ -70,12 +74,11 @@
     </div>
 </div>
 
-<div class="modal fade bs-example-modal-sm" id="callingModal" tabindex="-1" role="dialog" data-backdrop="static"
-     data-keyboard="false">
+<div class="modal fade" id="callingModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Calling <span id="callingName"></span>...</h4>
+                <h4 class="modal-title text-center">Calling <span id="callingName"></span>...</h4>
             </div>
             <div class="modal-body">
                 <p class="text-center">
