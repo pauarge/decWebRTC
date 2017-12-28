@@ -1,6 +1,7 @@
 "use strict";
 
 let connection = null;
+let dataChannel = null;
 
 let wsAddr = "ws://127.0.0.1:8080/echo";
 let mediaConstrains = {
@@ -101,10 +102,14 @@ function handleLogin() {
             localVideo.srcObject = stream;
 
             let configuration = {
-                "iceServers": [{"urls": "stun:stun.l.google.com:19302"}]
+                "iceServers": [{"urls": "stun:stun.l.google.com:19302"}],
+                optional: [{RtpDataChannels: true}]
             };
 
             myPeerConn = new RTCPeerConnection(configuration);
+
+            openDataChannel();
+
             myPeerConn.addStream(stream);
 
             myPeerConn.onremovestream = handleRemoveStreamEvent;
@@ -218,6 +223,22 @@ function handleRemoveStreamEvent(event) {
     handleLeave();
 }
 
+function openDataChannel() {
+    let dataChannelOptions = {
+        reliable: true
+    };
+
+    dataChannel = myPeerConn.createDataChannel("myDataChannel", dataChannelOptions);
+
+    dataChannel.onerror = function (error) {
+        console.log("Error:", error);
+    };
+
+    dataChannel.onmessage = function (event) {
+        console.log("Got message:", event.data);
+    };
+}
+
 
 function call(callToUsername) {
     if (callToUsername.length > 0 && callToUsername !== localUsername) {
@@ -319,6 +340,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
+        dataChannel.send(message);
     }
 });
 $('#chathead').click(function () {
