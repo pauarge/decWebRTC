@@ -44,6 +44,8 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	}
 	g.wantLock.RUnlock()
 
+	log.Println("Known peers:", g.getPeerList(""))
+
 	if dest != (common.MapKey{}) {
 		g.messagesLock.RLock()
 		msg := g.messages[dest]
@@ -108,9 +110,9 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 		} else {
 			log.Println("Received a private message but could not forward it to GUI")
 			res := common.PrivateMessage{
-				Origin: g.name,
+				Origin:      g.name,
 				Destination: msg.Origin,
-				HopLimit: common.MaxHops,
+				HopLimit:    common.MaxHops,
 				Data: common.JSONRequest{
 					Type: "initCallKO",
 					Name: g.name,
