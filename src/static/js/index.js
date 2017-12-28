@@ -305,8 +305,6 @@ $(document.body).on('click', '#ignoreCall', function (e) {
 $(document).ready(function () {
     connect();
     callStatusBig.text(noCallPhrase);
-    $('#timerBtn').prop('disabled', true);
-    $('#hangUpBtn').prop('disabled', true);
     showStopWatch();
     $('#modalUsers').modal('show');
 
