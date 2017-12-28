@@ -40,7 +40,7 @@ function connect() {
     };
 
     connection.onmessage = function (e) {
-        log(e.data);
+        //log(e.data);
         let data = JSON.parse(e.data);
 
         switch (data.Type) {
@@ -103,7 +103,6 @@ function handleLogin() {
 
             let configuration = {
                 "iceServers": [{"urls": "stun:stun.l.google.com:19302"}],
-                optional: [{RtpDataChannels: true}]
             };
 
             myPeerConn = new RTCPeerConnection(configuration);
@@ -228,7 +227,7 @@ function openDataChannel() {
         reliable: true
     };
 
-    dataChannel = myPeerConn.createDataChannel("myDataChannel", dataChannelOptions);
+    dataChannel = myPeerConn.createDataChannel("chat", dataChannelOptions);
 
     dataChannel.onerror = function (error) {
         console.log("Error:", error);
@@ -337,10 +336,10 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     let key = e.which || e.keyCode;
     if (key == 13) { // 13 is enter
         let message = this.value;
+        dataChannel.send(message);
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>11/19/13, " + hours + ":" + minutes + " PM</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";
-        dataChannel.send(message);
     }
 });
 $('#chathead').click(function () {
