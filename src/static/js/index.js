@@ -183,6 +183,9 @@ function handleLeave() {
     peerConnection.onicecandidate = null;
     peerConnection.ontrack = null;
 
+    $('#feed').empty();
+    $('#togglearea').slideUp();
+
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
     callStatusBig.text(noCallPhrase);
