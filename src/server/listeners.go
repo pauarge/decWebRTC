@@ -8,14 +8,15 @@ import (
 	"github.com/pauarge/decWebRTC/src/common"
 	"github.com/dedis/protobuf"
 	"net/http"
+	"strconv"
 )
 
 func (g *Gossiper) listenGUI() {
 	http.HandleFunc("/echo", g.echoHandler)
 	http.Handle("/", http.FileServer(http.Dir("static/")))
 
-	log.Printf("Serving on HTTP port %s\n", common.GuiPort)
-	log.Fatal(http.ListenAndServe(":"+common.GuiPort, nil))
+	log.Printf("Serving on HTTP port %d\n", common.GuiPort)
+	log.Fatal(http.ListenAndServe(":"+ strconv.Itoa(common.GuiPort), nil))
 }
 
 func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
