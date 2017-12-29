@@ -109,7 +109,7 @@ function handleReceivedData(e) {
             let received = new window.Blob(receiveBuffer);
 
             $('.feed')
-                .append("<div class='me'><div class='message'><a href='" + URL.createObjectURL(received) + "'>Download " + (currentFile.name) + " (" + currentFile.size + ") bytes</a><div class='meta'>me • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+                .append("<div class='me'><div class='message'><a href='" + URL.createObjectURL(received) + "' download>Download " + (currentFile.name) + " (" + currentFile.size + ") bytes</a><div class='meta'>me • " + currentTime.toLocaleTimeString() + "</div></div></div>");
             $(".feed").scrollTop($(".feed")[0].scrollHeight);
             $('#togglearea').slideDown();
 
@@ -294,17 +294,13 @@ function sendData() {
     log('File is ' + [file.name, file.size, file.type, file.lastModifiedDate].join(' '));
 
     // Handle 0 size files.
-    statusMessage.textContent = '';
-    downloadAnchor.textContent = '';
     if (file.size === 0) {
         bitrateDiv.innerHTML = '';
-        statusMessage.textContent = 'File is empty, please select a non-empty file';
         return;
     }
 
     sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
 
-    sendProgress.max = file.size;
     let chunkSize = 16384;
     let sliceFile = function (offset) {
         let reader = new window.FileReader();
@@ -314,7 +310,7 @@ function sendData() {
                 if (file.size > offset + e.target.result.byteLength) {
                     window.setTimeout(sliceFile, 0, offset + chunkSize);
                 }
-                sendProgress.value = offset + e.target.result.byteLength;
+                $('#sendProgress').width(offset + e.target.result.byteLength);
             };
         })(file);
         let slice = file.slice(offset, offset + chunkSize);

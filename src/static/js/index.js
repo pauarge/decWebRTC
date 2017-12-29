@@ -18,9 +18,6 @@ let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
 let bitrateDiv = document.querySelector('div#bitrate');
 let fileInput = document.querySelector('input#fileInput');
-let downloadAnchor = document.querySelector('a#download');
-let sendProgress = document.querySelector('progress#sendProgress');
-let statusMessage = document.querySelector('span#status');
 
 let receiveBuffer = [];
 let receivedSize = 0;
