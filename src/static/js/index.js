@@ -2,7 +2,8 @@
 
 let connection = null;
 let peerConnection = null;
-let dataChannel = null;
+let sendChannel = null;
+let receiveChannel = null;
 
 let wsAddr = "ws://127.0.0.1:8080/echo";
 let mediaConstrains = {
@@ -15,7 +16,6 @@ let targetUsername = null;
 
 let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
-let callStatusBig = $('#callStatusBig');
 
 $(document).ready(function () {
     connect();

@@ -41,7 +41,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     if (key === 13) {
         let message = this.value;
         log("Sending message", message);
-        dataChannel.send(message);
+        sendChannel.send(message);
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>me • " + hours + ":" + minutes + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         this.value = "";

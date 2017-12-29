@@ -69,11 +69,14 @@ function connect() {
     };
 }
 
-function receiveChannelCallback(event) {
-    event.channel.onopen = function () {
+function handleOnDataChannel(event) {
+    receiveChannel = event.channel;
+
+    receiveChannel.onopen = function () {
         log('Data channel is open and ready to be used.');
     };
-    event.channel.onmessage = function (e) {
+
+    receiveChannel.onmessage = function (e) {
         let currentTime = new Date();
         let hours = currentTime.getHours();
         let minutes = currentTime.getMinutes();
@@ -99,7 +102,6 @@ function call(callToUsername) {
                 alert("Error when creating an offer");
                 log(error);
             });
-
     } else {
         alert("Please, enter a valid username to call");
     }
@@ -118,19 +120,19 @@ function handleLogin() {
 
             peerConnection = new RTCPeerConnection(configuration);
 
-            dataChannel = peerConnection.createDataChannel("dataChannel", {reliable: true});
-            dataChannel.ononpen = handleSendChannelStatusChange;
-            dataChannel.onclose = handleSendChannelStatusChange;
-            dataChannel.onerror = handleSendChannelStatusChange;
+            sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
+            sendChannel.ononpen = handleSendChannelStatusChange;
+            sendChannel.onclose = handleSendChannelStatusChange;
+            sendChannel.onerror = handleSendChannelStatusChange;
 
             peerConnection.addStream(myStream);
 
             peerConnection.onremovestream = handleLeave;
-            peerConnection.ondatachannel = receiveChannelCallback;
+            peerConnection.ondatachannel = handleOnDataChannel;
 
             peerConnection.ontrack = function (event) {
                 remoteVideo.srcObject = event.streams[0];
-                callStatusBig.text("Call with " + targetUsername + ".");
+                $('#callStatusBig').text("Call with " + targetUsername + ".");
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
                 startStopWatch();
@@ -206,7 +208,7 @@ function handleLeave() {
 
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
-    callStatusBig.text("Not in an active call.");
+    $('#callStatusBig').text("Not in an active call.");
     resetStopWatch();
     handleLogin();
 }
@@ -241,14 +243,14 @@ function handleGetUserMediaError(e) {
     handleLeave();
 }
 
-function handleSendChannelStatusChange(event) {
-    if (dataChannel) {
-        let state = dataChannel.readyState;
+function handleSendChannelStatusChange() {
+    if (sendChannel) {
+        let state = sendChannel.readyState;
         if (state === "open") {
             log("Channel opened");
         } else {
             log("Channel closed");
-            dataChannel = null;
+            sendChannel = null;
         }
     }
 }
