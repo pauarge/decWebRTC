@@ -109,7 +109,10 @@ function handleReceivedData(e) {
             let received = new window.Blob(receiveBuffer);
 
             $('.feed')
-                .append("<div class='me'><div class='message'><a href='" + URL.createObjectURL(received) + "' download>Download " + (currentFile.name) + " (" + currentFile.size + ") bytes</a><div class='meta'>me • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+                .append("<div class='me'>" +
+                    "<div class='message'>" +
+                    "<a href='" + URL.createObjectURL(received) + "' download='" + currentFile.name + "'>Download " + (currentFile.name) + " (" + currentFile.size + ") bytes</a>" +
+                    "<div class='meta'>me • " + currentTime.toLocaleTimeString() + "</div></div></div>");
             $(".feed").scrollTop($(".feed")[0].scrollHeight);
             $('#togglearea').slideDown();
 
