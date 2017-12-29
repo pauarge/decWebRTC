@@ -77,6 +77,14 @@ function handleOnDataChannel(event) {
     };
 
     receiveChannel.onmessage = function (e) {
+        log(e.data);
+
+        if(typeof e.data === 'object') {
+            log("It is data");
+        } else {
+            log("It is text");
+        }
+
         let currentTime = new Date();
         $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
@@ -280,7 +288,6 @@ function sendData() {
         return;
     }
     sendProgress.max = file.size;
-    receiveProgress.max = file.size;
     var chunkSize = 16384;
     var sliceFile = function(offset) {
         var reader = new window.FileReader();
