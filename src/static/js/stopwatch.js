@@ -1,33 +1,26 @@
 "use strict";
 
 let clsStopwatch = function () {
-    // Private vars
-    let startAt = 0;	// Time of last start / resume. (0 if not running)
-    let lapTime = 0;	// Time on the clock when last stopped in milliseconds
+    let startAt = 0;
+    let lapTime = 0;
 
     let now = function () {
         return (new Date()).getTime();
     };
 
-    // Public methods
-    // Start or resume
     this.start = function () {
         startAt = startAt ? startAt : now();
     };
 
-    // Stop or pause
     this.stop = function () {
-        // If running, update elapsed time otherwise keep it
         lapTime = startAt ? lapTime + now() - startAt : lapTime;
-        startAt = 0; // Paused
+        startAt = 0;
     };
 
-    // Reset
     this.reset = function () {
         lapTime = startAt = 0;
     };
 
-    // Duration
     this.time = function () {
         return lapTime + (startAt ? now() - startAt : 0);
     };

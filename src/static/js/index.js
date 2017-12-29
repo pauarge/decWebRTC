@@ -13,8 +13,6 @@ let mediaConstrains = {
 let localUsername = null;
 let targetUsername = null;
 
-let stream;
-
 let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
 let callStatusBig = $('#callStatusBig');

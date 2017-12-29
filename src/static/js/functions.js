@@ -74,8 +74,7 @@ function handleLogin() {
 
     navigator.mediaDevices.getUserMedia(mediaConstrains)
         .then(function (myStream) {
-            stream = myStream;
-            localVideo.srcObject = stream;
+            localVideo.srcObject = myStream;
 
             let configuration = {
                 "iceServers": [{"urls": "stun:stun.l.google.com:19302"}],
@@ -88,7 +87,7 @@ function handleLogin() {
             dataChannel.onclose = handleSendChannelStatusChange;
             dataChannel.onerror = handleSendChannelStatusChange;
 
-            peerConnection.addStream(stream);
+            peerConnection.addStream(myStream);
 
             peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = receiveChannelCallback;
