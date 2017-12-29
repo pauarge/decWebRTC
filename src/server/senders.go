@@ -13,11 +13,11 @@ func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
 	p := common.GossipPacket{Status: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 	_, err = g.gossipConn.WriteToUDP(packetBytes, relay)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 }
 
@@ -25,7 +25,7 @@ func (g *Gossiper) SendPrivateMessage(msg common.PrivateMessage) {
 	p := common.GossipPacket{Private: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 	g.nextHopLock.RLock()
 	relay, ok := g.nextHop[msg.Destination]
@@ -33,7 +33,7 @@ func (g *Gossiper) SendPrivateMessage(msg common.PrivateMessage) {
 	if ok {
 		g.gossipConn.WriteToUDP(packetBytes, relay)
 		if err != nil {
-			log.Fatal(err)
+			log.Panicln(err)
 		}
 	}
 }

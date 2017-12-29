@@ -79,19 +79,18 @@ func (g *Gossiper) getPeerList(exclude string) []string {
 }
 
 func (g *Gossiper) sendUserList() {
-	defer g.nextHopLock.RUnlock()
-	g.nextHopLock.RLock()
-
-	var users []string
-	for k := range g.nextHop {
-		users = append(users, k)
-	}
-
-	sort.Strings(users)
-
 	if g.sock != nil {
+		defer g.nextHopLock.RUnlock()
+		g.nextHopLock.RLock()
+
+		var users []string
+		for k := range g.nextHop {
+			users = append(users, k)
+		}
+
+		sort.Strings(users)
 		g.sockLock.Lock()
-		g.sock.WriteJSON(common.JSONRequest{Type: "users", Users: users})
+		g.sock.WriteJSON(common.JSONRequest{Type: "users", Users: users, Peers: g.getPeerList("")})
 		g.sockLock.Unlock()
 	}
 }

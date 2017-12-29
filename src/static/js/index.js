@@ -70,7 +70,7 @@ function connect() {
                 alert("GUI already opened in another browser or tab");
                 break;
             case "users":
-                handleUsers(data.Users);
+                handleUsers(data.Users, data.Peers);
                 break;
             default:
                 log("Could not handle unknown type");
@@ -196,11 +196,15 @@ function handleLeave() {
     handleLogin();
 }
 
-function handleUsers(users) {
+function handleUsers(users, peers) {
     $('#availableUsersList').empty();
-    for (var i in users) {
+    for (let i in users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
+    }
+    for (let i in peers) {
+        $('#peerList')
+            .append('<a href="#" class="list-group-item">' + peers[i] + '</a>')
     }
 }
 
@@ -224,7 +228,6 @@ function handleGetUserMediaError(e) {
 }
 
 function receiveChannelCallback(event) {
-    log('peerConnection.ondatachannel event fired.');
     event.channel.onopen = function () {
         log('Data channel is open and ready to be used.');
     };
@@ -254,7 +257,6 @@ function call(callToUsername) {
     if (callToUsername.length > 0 && callToUsername !== localUsername) {
         targetUsername = callToUsername;
 
-        // create an offer
         peerConnection.createOffer(function (offer) {
             send({
                 type: "offer",
