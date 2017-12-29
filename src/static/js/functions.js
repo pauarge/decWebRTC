@@ -219,8 +219,7 @@ function handleUsers(users, peers) {
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
     for (let i in peers) {
-        $('#peerList')
-            .append('<a href="#" class="list-group-item">' + peers[i] + '</a>')
+        $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
     }
 }
 
@@ -233,7 +232,6 @@ function handleGetUserMediaError(e) {
             break;
         case "SecurityError":
         case "PermissionDeniedError":
-            // Do nothing; this is the same as the user canceling the call.
             break;
         default:
             alert("Error opening your camera and/or microphone: " + e.message);

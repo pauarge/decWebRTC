@@ -48,6 +48,14 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     }
 });
 
+$('#peerListCollapse').on('hidden.bs.collapse', function () {
+    $('#peerListCollapseLaunch').text("Display known peers");
+});
+
+$('#peerListCollapse').on('show.bs.collapse', function () {
+    $('#peerListCollapseLaunch').text("Hide known peers");
+});
+
 $('#chathead').click(function () {
     $('#togglearea').slideToggle();
 });
