@@ -82,10 +82,15 @@ function handleOnDataChannel(event) {
         if(typeof e.data === 'object') {
             log("It is data");
         } else {
-            let currentTime = new Date();
-            $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
-            $(".feed").scrollTop($(".feed")[0].scrollHeight);
-            $('#togglearea').slideDown();
+            let data = JSON.parse(e.data);
+            if (data.text != null) {
+                let currentTime = new Date();
+                $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+                $(".feed").scrollTop($(".feed")[0].scrollHeight);
+                $('#togglearea').slideDown();
+            } else {
+                log(data);
+            }
         }
     }
 }
@@ -286,7 +291,7 @@ function sendData() {
         return;
     }
 
-    sendChannel.send({'filename': file.name, 'size': file.size, 'type': file.type});
+    sendChannel.send(JSON.stringify({'filename': file.name, 'size': file.size, 'type': file.type}));
 
     sendProgress.max = file.size;
     let chunkSize = 16384;
