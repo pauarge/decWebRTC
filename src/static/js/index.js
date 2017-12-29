@@ -25,6 +25,7 @@ let statusMessage = document.querySelector('span#status');
 
 let receiveBuffer = [];
 let receivedSize = 0;
+let currentFile = null;
 
 $(document).ready(function () {
     connect();

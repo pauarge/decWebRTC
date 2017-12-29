@@ -76,23 +76,7 @@ function handleOnDataChannel(event) {
         log('Data channel is open and ready to be used.');
     };
 
-    receiveChannel.onmessage = function (e) {
-        log(e.data);
-
-        if(typeof e.data === 'object') {
-            log("It is data");
-        } else {
-            let data = JSON.parse(e.data);
-            if (data.text != null) {
-                let currentTime = new Date();
-                $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
-                $(".feed").scrollTop($(".feed")[0].scrollHeight);
-                $('#togglearea').slideDown();
-            } else {
-                log(data);
-            }
-        }
-    }
+    receiveChannel.onmessage = handleReceivedData;
 }
 
 function call(callToUsername) {
@@ -113,6 +97,37 @@ function call(callToUsername) {
             });
     } else {
         alert("Please, enter a valid username to call");
+    }
+}
+
+function handleReceivedData(e) {
+    if (typeof e.data === 'object') {
+        receiveBuffer.push(event.data);
+        receivedSize += e.data.byteLength;
+        if (receivedSize === currentFile.size) {
+            let received = new window.Blob(receiveBuffer);
+            receiveBuffer = [];
+
+            downloadAnchor.href = URL.createObjectURL(received);
+            downloadAnchor.download = currentFile.name;
+            downloadAnchor.textContent =
+                'Click to download \'' + currentFile.name + '\' (' + currentFile.size + ' bytes)';
+            downloadAnchor.style.display = 'block';
+
+            receivedSize = 0;
+        }
+
+    } else {
+        let data = JSON.parse(e.data);
+        if (data.text != null) {
+            let currentTime = new Date();
+            $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+            $(".feed").scrollTop($(".feed")[0].scrollHeight);
+            $('#togglearea').slideDown();
+        } else {
+            currentFile = data;
+            log(data);
+        }
     }
 }
 
@@ -278,9 +293,7 @@ function handleFileInputChange() {
 
 function sendData() {
     let file = fileInput.files[0];
-    log('File is ' + [file.name, file.size, file.type,
-        file.lastModifiedDate
-    ].join(' '));
+    log('File is ' + [file.name, file.size, file.type, file.lastModifiedDate].join(' '));
 
     // Handle 0 size files.
     statusMessage.textContent = '';
@@ -295,10 +308,10 @@ function sendData() {
 
     sendProgress.max = file.size;
     let chunkSize = 16384;
-    let sliceFile = function(offset) {
+    let sliceFile = function (offset) {
         let reader = new window.FileReader();
-        reader.onload = (function() {
-            return function(e) {
+        reader.onload = (function () {
+            return function (e) {
                 sendChannel.send(e.target.result);
                 if (file.size > offset + e.target.result.byteLength) {
                     window.setTimeout(sliceFile, 0, offset + chunkSize);
