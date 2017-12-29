@@ -21,12 +21,12 @@ function send(message) {
 function connect() {
     connection = new WebSocket(wsAddr);
 
-    connection.onopen = function (e) {
+    connection.onopen = function () {
         log("Connected to the signaling server");
     };
 
     connection.onmessage = function (e) {
-        log(e.data);
+        log("Got message through socket:", e.data);
         let data = JSON.parse(e.data);
 
         switch (data.Type) {
@@ -129,17 +129,19 @@ function handleOffer(offer, name) {
     targetUsername = name;
     peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
-    peerConnection.createAnswer(function (answer) {
-        peerConnection.setLocalDescription(answer);
-        send({
-            type: "answer",
-            answer: answer
+    peerConnection.createAnswer()
+        .then(function (answer) {
+            peerConnection.setLocalDescription(answer);
+            send({
+                type: "answer",
+                answer: answer
+            });
+        })
+        .catch(function (error) {
+            targetUsername = null;
+            log(error);
+            alert("Error when creating an answer");
         });
-    }, function (error) {
-        alert("Error when creating an answer");
-        targetUsername = null;
-        log(error);
-    });
 }
 
 function handleAnswer(answer) {
