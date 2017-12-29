@@ -16,6 +16,12 @@ let targetUsername = null;
 
 let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
+let bitrateDiv = document.querySelector('div#bitrate');
+let fileInput = document.querySelector('input#fileInput');
+let downloadAnchor = document.querySelector('a#download');
+let sendProgress = document.querySelector('progress#sendProgress');
+let receiveProgress = document.querySelector('progress#receiveProgress');
+let statusMessage = document.querySelector('span#status');
 
 $(document).ready(function () {
     connect();

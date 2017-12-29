@@ -22,7 +22,8 @@
                 <span class="glyphicon glyphicon-time"></span>
                 <span id="time"></span>
             </button>
-            <button id="sendFileLaunch" class="btn-primary btn" disabled>
+            <button id="sendFileLaunch" data-toggle="modal" data-target="#fileUploadModal" class="btn-primary btn"
+                    disabled>
                 <span class="glyphicon glyphicon-floppy-open"></span>
                 Send file
             </button>
@@ -55,7 +56,8 @@
             <div class="modal-body">
                 <p>Here's a list of all available users. Click on one of them to start a call.</p>
                 <div class="list-group" id="availableUsersList"></div>
-                <p><a href="#" data-toggle="collapse" data-target="#peerListCollapse" id="peerListCollapseLaunch">Display known peers</a></p>
+                <p><a href="#" data-toggle="collapse" data-target="#peerListCollapse" id="peerListCollapseLaunch">Display
+                    known peers</a></p>
                 <div id="peerListCollapse" class="collapse">
                     <ul class="list-group" id="peerList"></ul>
                 </div>
@@ -88,6 +90,31 @@
                 <p class="text-center">
                     <span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
                 </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">File upload</h4>
+            </div>
+            <div class="modal-body">
+                <form id="fileInfo">
+                    <input type="file" id="fileInput" name="files"/>
+                </form>
+
+                <div class="progress">
+                    <div class="label">Send progress:</div>
+                    <progress id="sendProgress" max="0" value="0"></progress>
+                </div>
+
+                <div id="bitrate"></div>
+                <a id="download"></a>
+                <span id="status"></span>
             </div>
         </div>
     </div>

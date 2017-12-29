@@ -1,5 +1,7 @@
 "use strict";
 
+fileInput.addEventListener('change', handleFileInputChange, false);
+
 $(document.body).on('click', '#hangUpBtn', function (e) {
     send({
         type: "leave"

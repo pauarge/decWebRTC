@@ -119,6 +119,7 @@ function handleLogin() {
             peerConnection = new RTCPeerConnection(configuration);
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
+            sendChannel.binaryType = 'arraybuffer';
             sendChannel.ononpen = handleSendChannelStatusChange;
             sendChannel.onclose = handleSendChannelStatusChange;
             sendChannel.onerror = handleSendChannelStatusChange;
@@ -133,6 +134,7 @@ function handleLogin() {
                 $('#callStatusBig').text("Call with " + targetUsername + ".");
                 $('.modal').modal('hide');
                 $('#hangUpBtn').prop('disabled', false);
+                $('#sendFileLaunch').prop('disabled', false);
                 startStopWatch();
             };
 
@@ -205,6 +207,7 @@ function handleLeave() {
     $('#togglearea').slideUp();
 
     $('#hangUpBtn').prop('disabled', true);
+    $('#fileUploadModal').prop('disabled', true);
     $('#modalUsers').modal('show');
     $('#callStatusBig').text("Not in an active call.");
     resetStopWatch();
@@ -251,4 +254,47 @@ function handleSendChannelStatusChange() {
             sendChannel = null;
         }
     }
+}
+
+function handleFileInputChange() {
+    let file = fileInput.files[0];
+    if (!file) {
+        log('No file chosen');
+    } else {
+        sendData();
+    }
+}
+
+function sendData() {
+    var file = fileInput.files[0];
+    log('File is ' + [file.name, file.size, file.type,
+        file.lastModifiedDate
+    ].join(' '));
+
+    // Handle 0 size files.
+    statusMessage.textContent = '';
+    downloadAnchor.textContent = '';
+    if (file.size === 0) {
+        bitrateDiv.innerHTML = '';
+        statusMessage.textContent = 'File is empty, please select a non-empty file';
+        return;
+    }
+    sendProgress.max = file.size;
+    receiveProgress.max = file.size;
+    var chunkSize = 16384;
+    var sliceFile = function(offset) {
+        var reader = new window.FileReader();
+        reader.onload = (function() {
+            return function(e) {
+                sendChannel.send(e.target.result);
+                if (file.size > offset + e.target.result.byteLength) {
+                    window.setTimeout(sliceFile, 0, offset + chunkSize);
+                }
+                sendProgress.value = offset + e.target.result.byteLength;
+            };
+        })(file);
+        var slice = file.slice(offset, offset + chunkSize);
+        reader.readAsArrayBuffer(slice);
+    };
+    sliceFile(0);
 }
