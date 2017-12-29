@@ -69,6 +69,42 @@ function connect() {
     };
 }
 
+function receiveChannelCallback(event) {
+    event.channel.onopen = function () {
+        log('Data channel is open and ready to be used.');
+    };
+    event.channel.onmessage = function (e) {
+        let currentTime = new Date();
+        let hours = currentTime.getHours();
+        let minutes = currentTime.getMinutes();
+        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
+        $(".feed").scrollTop($(".feed")[0].scrollHeight);
+        $('#togglearea').slideDown();
+    }
+}
+
+function call(callToUsername) {
+    if (callToUsername.length > 0 && callToUsername !== localUsername) {
+        targetUsername = callToUsername;
+
+        peerConnection.createOffer()
+            .then(function (offer) {
+                peerConnection.setLocalDescription(offer);
+                send({
+                    type: "offer",
+                    offer: offer
+                });
+            })
+            .catch(function (error) {
+                alert("Error when creating an offer");
+                log(error);
+            });
+
+    } else {
+        alert("Please, enter a valid username to call");
+    }
+}
+
 function handleLogin() {
     document.querySelector('#username-placeholder').textContent = localUsername;
 
@@ -207,20 +243,6 @@ function handleGetUserMediaError(e) {
     handleLeave();
 }
 
-function receiveChannelCallback(event) {
-    event.channel.onopen = function () {
-        log('Data channel is open and ready to be used.');
-    };
-    event.channel.onmessage = function (e) {
-        let currentTime = new Date();
-        let hours = currentTime.getHours();
-        let minutes = currentTime.getMinutes();
-        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
-        $(".feed").scrollTop($(".feed")[0].scrollHeight);
-        $('#togglearea').slideDown();
-    }
-}
-
 function handleSendChannelStatusChange(event) {
     if (dataChannel) {
         let state = dataChannel.readyState;
@@ -230,26 +252,5 @@ function handleSendChannelStatusChange(event) {
             log("Channel closed");
             dataChannel = null;
         }
-    }
-}
-
-function call(callToUsername) {
-    if (callToUsername.length > 0 && callToUsername !== localUsername) {
-        targetUsername = callToUsername;
-
-        peerConnection.createOffer(function (offer) {
-            send({
-                type: "offer",
-                offer: offer
-            });
-
-            peerConnection.setLocalDescription(offer);
-        }, function (error) {
-            alert("Error when creating an offer");
-            log(error);
-        });
-
-    } else {
-        alert("Please, enter a valid username to call");
     }
 }
