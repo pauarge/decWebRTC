@@ -1,3 +1,5 @@
+"use strict";
+
 let clsStopwatch = function () {
     // Private vars
     let startAt = 0;	// Time of last start / resume. (0 if not running)
