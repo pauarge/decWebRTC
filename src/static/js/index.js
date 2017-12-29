@@ -23,6 +23,9 @@ let sendProgress = document.querySelector('progress#sendProgress');
 let receiveProgress = document.querySelector('progress#receiveProgress');
 let statusMessage = document.querySelector('span#status');
 
+let receiveBuffer = [];
+let receivedSize = 0;
+
 $(document).ready(function () {
     connect();
     showStopWatch();

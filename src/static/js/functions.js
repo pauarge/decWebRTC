@@ -82,13 +82,11 @@ function handleOnDataChannel(event) {
         if(typeof e.data === 'object') {
             log("It is data");
         } else {
-            log("It is text");
+            let currentTime = new Date();
+            $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+            $(".feed").scrollTop($(".feed")[0].scrollHeight);
+            $('#togglearea').slideDown();
         }
-
-        let currentTime = new Date();
-        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
-        $(".feed").scrollTop($(".feed")[0].scrollHeight);
-        $('#togglearea').slideDown();
     }
 }
 
@@ -274,7 +272,7 @@ function handleFileInputChange() {
 }
 
 function sendData() {
-    var file = fileInput.files[0];
+    let file = fileInput.files[0];
     log('File is ' + [file.name, file.size, file.type,
         file.lastModifiedDate
     ].join(' '));
@@ -287,10 +285,13 @@ function sendData() {
         statusMessage.textContent = 'File is empty, please select a non-empty file';
         return;
     }
+
+    sendChannel.send({'filename': file.name, 'size': file.size, 'type': file.type});
+
     sendProgress.max = file.size;
-    var chunkSize = 16384;
-    var sliceFile = function(offset) {
-        var reader = new window.FileReader();
+    let chunkSize = 16384;
+    let sliceFile = function(offset) {
+        let reader = new window.FileReader();
         reader.onload = (function() {
             return function(e) {
                 sendChannel.send(e.target.result);
@@ -300,7 +301,7 @@ function sendData() {
                 sendProgress.value = offset + e.target.result.byteLength;
             };
         })(file);
-        var slice = file.slice(offset, offset + chunkSize);
+        let slice = file.slice(offset, offset + chunkSize);
         reader.readAsArrayBuffer(slice);
     };
     sliceFile(0);
