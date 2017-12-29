@@ -126,7 +126,6 @@ function handleReceivedData(e) {
             $('#togglearea').slideDown();
         } else {
             currentFile = data;
-            log(data);
         }
     }
 }
@@ -304,7 +303,7 @@ function sendData() {
         return;
     }
 
-    sendChannel.send(JSON.stringify({'filename': file.name, 'size': file.size, 'type': file.type}));
+    sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
 
     sendProgress.max = file.size;
     let chunkSize = 16384;
