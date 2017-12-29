@@ -123,7 +123,7 @@ function handleReceivedData(e) {
     } else {
         let data = JSON.parse(e.data);
         if (data.text != null) {
-            $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
+            $('.feed').append("<div class='other'><div class='message'>" + (e.data.text) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
             $(".feed").scrollTop($(".feed")[0].scrollHeight);
             $('#togglearea').slideDown();
         } else {
