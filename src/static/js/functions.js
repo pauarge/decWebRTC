@@ -78,9 +78,7 @@ function handleOnDataChannel(event) {
 
     receiveChannel.onmessage = function (e) {
         let currentTime = new Date();
-        let hours = currentTime.getHours();
-        let minutes = currentTime.getMinutes();
-        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + hours + ":" + minutes + "</div></div></div>");
+        $('.feed').append("<div class='other'><div class='message'>" + (e.data) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
         $('#togglearea').slideDown();
     }
