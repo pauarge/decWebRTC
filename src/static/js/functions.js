@@ -168,7 +168,7 @@ function handleLeave() {
 
     $('#hangUpBtn').prop('disabled', true);
     $('#modalUsers').modal('show');
-    callStatusBig.text(noCallPhrase);
+    callStatusBig.text("Not in an active call.");
     resetStopWatch();
     handleLogin();
 }

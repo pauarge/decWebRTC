@@ -16,11 +16,9 @@ let targetUsername = null;
 let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
 let callStatusBig = $('#callStatusBig');
-let noCallPhrase = "Not in an active call.";
 
 $(document).ready(function () {
     connect();
-    callStatusBig.text(noCallPhrase);
     showStopWatch();
     $('#modalUsers').modal('show');
 
