@@ -26,7 +26,7 @@ function connect() {
     };
 
     connection.onmessage = function (e) {
-        log("Got message through socket:", e.data);
+        log(e.data);
         let data = JSON.parse(e.data);
 
         switch (data.Type) {
