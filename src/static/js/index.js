@@ -40,7 +40,7 @@ function connect() {
     };
 
     connection.onmessage = function (e) {
-        //log(e.data);
+        log(e.data);
         let data = JSON.parse(e.data);
 
         switch (data.Type) {
@@ -198,6 +198,7 @@ function handleLeave() {
 
 function handleUsers(users, peers) {
     $('#availableUsersList').empty();
+    $('#peerList').empty();
     for (let i in users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
