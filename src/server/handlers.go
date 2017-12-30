@@ -2,9 +2,8 @@ package server
 
 import (
 	"net"
-	"strconv"
-	"github.com/pauarge/decWebRTC/src/common"
 	"log"
+	"github.com/pauarge/decWebRTC/src/common"
 )
 
 func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAddr) {
