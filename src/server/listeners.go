@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 	"net"
+	"strconv"
+	"net/http"
 	"github.com/pauarge/decWebRTC/src/common"
 	"github.com/dedis/protobuf"
-	"net/http"
-	"strconv"
 )
 
 func (g *Gossiper) listenGUI() {

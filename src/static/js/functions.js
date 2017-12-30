@@ -155,26 +155,28 @@ function handleLogin() {
 
             peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = handleOnDataChannel;
-
-            peerConnection.ontrack = function (event) {
-                remoteVideo.srcObject = event.streams[0];
-                $('#callStatusBig').text("Call with " + targetUsername + ".");
-                $('.modal').modal('hide');
-                $('#hangUpBtn').prop('disabled', false);
-                $('#sendFileLaunch').prop('disabled', false);
-                startStopWatch();
-            };
-
-            peerConnection.onicecandidate = function (event) {
-                if (event.candidate) {
-                    send({
-                        type: "candidate",
-                        candidate: event.candidate
-                    });
-                }
-            };
+            peerConnection.ontrack = handlePeerConnectionTrack;
+            peerConnection.onicecandidate = handlePeerConnectionICECandidate;
         })
         .catch(handleGetUserMediaError);
+}
+
+function handlePeerConnectionTrack(event) {
+    remoteVideo.srcObject = event.streams[0];
+    $('#callStatusBig').text("Call with " + targetUsername + ".");
+    $('.modal').modal('hide');
+    $('#hangUpBtn').prop('disabled', false);
+    $('#sendFileLaunch').prop('disabled', false);
+    startStopWatch();
+}
+
+function handlePeerConnectionICECandidate(event) {
+    if (event.candidate) {
+        send({
+            type: "candidate",
+            candidate: event.candidate
+        });
+    }
 }
 
 function handleInitCall(name) {

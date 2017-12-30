@@ -2,7 +2,7 @@
 
 fileInput.addEventListener('change', handleFileInputChange, false);
 
-$(document.body).on('click', '#hangUpBtn', function (e) {
+$(document.body).on('click', '#hangUpBtn', function () {
     send({
         type: "leave"
     });
@@ -10,7 +10,6 @@ $(document.body).on('click', '#hangUpBtn', function (e) {
 });
 
 $(document.body).on('click', '.callLaunch', function (e) {
-    e.preventDefault();
     targetUsername = $(this).data('user');
     $('#callingName').text(targetUsername);
     $('.modal').modal('hide');
@@ -21,12 +20,10 @@ $(document.body).on('click', '.callLaunch', function (e) {
 });
 
 $(document.body).on('click', '#respondCall', function (e) {
-    e.preventDefault();
     call(targetUsername);
 });
 
 $(document.body).on('click', '#ignoreCall', function (e) {
-    e.preventDefault();
     send({
         type: "initCallKO"
     });
