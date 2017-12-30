@@ -16,7 +16,6 @@ let targetUsername = null;
 
 let localVideo = document.querySelector('#localVideo');
 let remoteVideo = document.querySelector('#remoteVideo');
-let bitrateDiv = document.querySelector('div#bitrate');
 let fileInput = document.querySelector('input#fileInput');
 
 let receiveBuffer = [];

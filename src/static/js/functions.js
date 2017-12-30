@@ -119,8 +119,8 @@ function handleReceivedData(e) {
             receiveBuffer = [];
             receivedSize = 0;
         }
-
     } else {
+        log(e.data);
         let data = JSON.parse(e.data);
         if (data.text != null) {
             $('.feed').append("<div class='other'><div class='message'>" + (data.text) + "<div class='meta'>" + targetUsername + " • " + currentTime.toLocaleTimeString() + "</div></div></div>");
@@ -296,9 +296,7 @@ function sendData() {
     let file = fileInput.files[0];
     log('File is ' + [file.name, file.size, file.type, file.lastModifiedDate].join(' '));
 
-    // Handle 0 size files.
     if (file.size === 0) {
-        bitrateDiv.innerHTML = '';
         return;
     }
 
