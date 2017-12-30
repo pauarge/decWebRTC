@@ -11,12 +11,12 @@ import (
 	"github.com/dedis/protobuf"
 )
 
-func (g *Gossiper) listenGUI() {
+func (g *Gossiper) listenGUI(guiPort int) {
 	http.HandleFunc("/echo", g.echoHandler)
 	http.Handle("/", http.FileServer(http.Dir("static/")))
 
-	log.Printf("Serving on HTTP port %d\n", common.GuiPort)
-	log.Fatal(http.ListenAndServe(":"+ strconv.Itoa(common.GuiPort), nil))
+	log.Printf("Serving on HTTP port %d\n", guiPort)
+	log.Fatal(http.ListenAndServe(":"+ strconv.Itoa(guiPort), nil))
 }
 
 func (g *Gossiper) listenGossip(wg sync.WaitGroup) {

@@ -5,8 +5,8 @@ import (
 
 	"log"
 	"sync"
-	"github.com/pauarge/decWebRTC/src/common"
 	"github.com/gorilla/websocket"
+	"strconv"
 )
 
 type Gossiper struct {
@@ -14,12 +14,10 @@ type Gossiper struct {
 	name         string
 	gossipConn   *net.UDPConn
 	channels     map[string]chan bool
-	messages     map[common.MapKey]common.RumorMessage
 	nextHop      map[string]*net.UDPAddr
 	peers        map[string]bool
 	want         map[string]uint32
 	channelsLock *sync.RWMutex
-	messagesLock *sync.RWMutex
 	nextHopLock  *sync.RWMutex
 	peersLock    *sync.RWMutex
 	wantLock     *sync.RWMutex
@@ -29,8 +27,8 @@ type Gossiper struct {
 	sockLock *sync.RWMutex
 }
 
-func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
-	gossipAddr, err := net.ResolveUDPAddr("udp4", gossipAddrRaw)
+func NewGossiper(gossipPort int, name, peers string) *Gossiper {
+	gossipAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:" + strconv.Itoa(gossipPort))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,12 +41,10 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 		name:         name,
 		gossipConn:   gossipConn,
 		channels:     make(map[string]chan bool),
-		messages:     make(map[common.MapKey]common.RumorMessage),
 		nextHop:      make(map[string]*net.UDPAddr),
-		peers:        parsePeerSet(peers, gossipAddrRaw),
+		peers:        parsePeerSet(peers),
 		want:         make(map[string]uint32),
 		channelsLock: &sync.RWMutex{},
-		messagesLock: &sync.RWMutex{},
 		nextHopLock:  &sync.RWMutex{},
 		peersLock:    &sync.RWMutex{},
 		wantLock:     &sync.RWMutex{},
@@ -56,10 +52,10 @@ func NewGossiper(gossipAddrRaw, name, peers string) *Gossiper {
 	}
 }
 
-func (g *Gossiper) Start(rtimer int) {
+func (g *Gossiper) Start(guiPort, rtimer int) {
 	var wg sync.WaitGroup
 	wg.Add(4)
-	go g.listenGUI()
+	go g.listenGUI(guiPort)
 	go g.listenGossip(wg)
 	go g.routeRumorGenerator(wg, rtimer)
 	go g.antiEntropy(wg)

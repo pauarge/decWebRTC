@@ -11,20 +11,18 @@ import (
 	"github.com/pauarge/decWebRTC/src/common"
 )
 
-func parsePeerSet(peers, gossipAddr string) map[string]bool {
+func parsePeerSet(peers string) map[string]bool {
 	peerSet := make(map[string]bool)
 	if last := len(peers) - 1; last >= 0 {
 		if peers[last] == ',' {
 			peers = peers[:last]
 		}
 		for _, i := range strings.Split(peers, ",") {
-			if i != gossipAddr {
-				_, err := net.ResolveUDPAddr("udp4", i)
-				if err != nil {
-					log.Fatal(err)
-				}
-				peerSet[i] = true
+			_, err := net.ResolveUDPAddr("udp4", i)
+			if err != nil {
+				log.Fatal(err)
 			}
+			peerSet[i] = true
 		}
 	}
 	return peerSet
@@ -61,6 +59,8 @@ func (g *Gossiper) encodeWant() common.StatusPacket {
 	for k := range g.want {
 		x = append(x, common.PeerStatus{Identifier: k, NextId: g.want[k]})
 	}
+
+	// TODO: Do we really need to sort this?
 	sort.Sort(common.PeerStatusList(x))
 	return common.StatusPacket{Want: x}
 }
@@ -97,12 +97,9 @@ func (g *Gossiper) sendUserList() {
 
 func (g *Gossiper) createRouteRumor() common.RumorMessage {
 	defer g.wantLock.Unlock()
-	defer g.messagesLock.Unlock()
-	g.messagesLock.Lock()
 	g.wantLock.Lock()
 
 	msg := common.RumorMessage{Origin: g.name, Id: g.counter}
-	g.messages[common.MapKey{Origin: g.name, MessageId: g.counter}] = msg
 	g.counter += 1
 	g.want[g.name] = g.counter
 	return msg

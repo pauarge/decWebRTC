@@ -46,9 +46,17 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	log.Println("Known peers:", g.getPeerList(""))
 
 	if dest != (common.MapKey{}) {
-		g.messagesLock.RLock()
-		msg := g.messages[dest]
-		g.messagesLock.RUnlock()
+		msg := common.RumorMessage{
+			Origin: dest.Origin,
+			Id:     dest.MessageId,
+		}
+		if dest.Origin != g.name {
+			g.nextHopLock.RLock()
+			nextHop := g.nextHop[dest.Origin]
+			g.nextHopLock.RUnlock()
+			msg.LastIP = &nextHop.IP
+			msg.LastPort = &nextHop.Port
+		}
 		g.rumorMongering(relayStr, msg)
 	} else if synced {
 		log.Println("In sync with " + relayStr)
@@ -66,16 +74,11 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		g.nextHopLock.Lock()
 		g.nextHop[msg.Origin] = relay
 		g.nextHopLock.Unlock()
-
 		g.sendUserList()
 	} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
 		g.wantLock.Lock()
 		g.want[msg.Origin] = msg.Id + 1
 		g.wantLock.Unlock()
-
-		g.messagesLock.Lock()
-		g.messages[common.MapKey{Origin: msg.Origin, MessageId: msg.Id}] = msg
-		g.messagesLock.Unlock()
 
 		if msg.Origin != g.name {
 			g.nextHopLock.Lock()
