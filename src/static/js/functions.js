@@ -13,7 +13,7 @@ function send(message) {
         // TODO: Retry after reconnection
     } else {
         let msgJSON = JSON.stringify(message);
-        log("Sending '" + message.type + "' message: " + msgJSON);
+        log("Sending message: " + msgJSON);
         connection.send(msgJSON);
     }
 }

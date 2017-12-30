@@ -103,7 +103,7 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 			g.sockLock.Lock()
 			g.sock.WriteJSON(msg.Data)
 			g.sockLock.Unlock()
-		} else {
+		} else if msg.Data.Type != "initCallKO" {
 			log.Println("Received a private message but could not forward it to GUI")
 			res := common.PrivateMessage{
 				Origin:      g.name,
