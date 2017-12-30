@@ -26,7 +26,7 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 		if remoteWant[i] > localWant[i] {
 			synced = false
 		} else if remoteWant[i] < localWant[i] {
-			dest = common.MapKey{Origin: i, MessageId: remoteWant[i]}
+			dest = common.MapKey{Origin: i, MessageId: localWant[i] - 1}
 			break
 		}
 	}
@@ -38,7 +38,7 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 			if remoteWant[i] == 0 {
 				remoteWant[i] = 1
 			}
-			dest = common.MapKey{Origin: i, MessageId: remoteWant[i]}
+			dest = common.MapKey{Origin: i, MessageId: localWant[i] - 1}
 			break
 		}
 	}
@@ -69,7 +69,7 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		g.nextHopLock.Unlock()
 
 		g.sendUserList()
-	} else if wantMsgOrigin == msg.Id || wantMsgOrigin == 0 {
+	} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
 		if msg.LastPort != nil && msg.LastIP != nil {
 			g.peersLock.Lock()
 			g.peers[msg.LastIP.String()+":"+strconv.Itoa(*msg.LastPort)] = true
