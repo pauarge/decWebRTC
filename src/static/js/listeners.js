@@ -59,3 +59,13 @@ $('#peerListCollapse').on('show.bs.collapse', function () {
 $('#chathead').click(function () {
     $('#togglearea').slideToggle();
 });
+
+$('#peerAddForm').submit(function (e) {
+    e.preventDefault();
+    let newPeer = $("#peerAddInp").val();
+    send({
+        type: "peer",
+        newPeer: newPeer
+    });
+    $("#peerAddInp").val("");
+});

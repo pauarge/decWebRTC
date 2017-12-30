@@ -65,7 +65,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		case "peer":
 			log.Println("Adding peer from GUI")
 			g.peersLock.Lock()
-			g.peers[data.Target] = true
+			g.peers[data.NewPeer] = true
 			g.peersLock.Unlock()
 			g.sendUserList()
 			continue

@@ -47,6 +47,7 @@ type JSONRequest struct {
 	Type      string
 	Name      string
 	Target    string
+	NewPeer   string
 	Users     []string
 	Peers     []string
 	Offer     *json.RawMessage
