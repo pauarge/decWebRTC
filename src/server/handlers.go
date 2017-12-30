@@ -70,12 +70,6 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 
 		g.sendUserList()
 	} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
-		if msg.LastPort != nil && msg.LastIP != nil {
-			g.peersLock.Lock()
-			g.peers[msg.LastIP.String()+":"+strconv.Itoa(*msg.LastPort)] = true
-			g.peersLock.Unlock()
-		}
-
 		g.wantLock.Lock()
 		g.want[msg.Origin] = msg.Id + 1
 		g.wantLock.Unlock()
