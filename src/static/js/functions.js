@@ -222,7 +222,7 @@ function handleCandidate(candidate) {
 function handleLeave() {
     targetUsername = null;
 
-    if (remoteVideo != null) {
+    if (remoteVideo.srcObject != null) {
         remoteVideo.srcObject.getTracks().forEach(track => track.stop());
     }
 
