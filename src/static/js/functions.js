@@ -217,7 +217,6 @@ function handleAnswer(answer) {
 }
 
 function handleCandidate(candidate) {
-    log("Added ICE candidate");
     peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
 }
 
