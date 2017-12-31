@@ -13,7 +13,7 @@ import (
 
 func (g *Gossiper) listenGUI(guiPort int) {
 	http.HandleFunc("/echo", g.echoHandler)
-	http.Handle("/", http.FileServer(http.Dir("static/")))
+	http.Handle("/", http.FileServer(http.Dir("src/static/")))
 
 	log.Printf("Serving on HTTP port %d\n", guiPort)
 	log.Fatal(http.ListenAndServe(":"+ strconv.Itoa(guiPort), nil))
