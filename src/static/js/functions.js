@@ -244,7 +244,7 @@ function handleUsers(users, peers) {
     iceServersUrls = [];
     for (let i in users) {
         let addr = users[i].split(":")[0] + ":3478";
-        iceServersUrls.append(addr);
+        iceServersUrls.push(addr);
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
