@@ -79,10 +79,8 @@ function handleOnDataChannel(event) {
     receiveChannel.onmessage = handleReceivedData;
 }
 
-function call(callToUsername) {
-    if (callToUsername.length > 0 && callToUsername !== localUsername) {
-        targetUsername = callToUsername;
-
+function call() {
+    if (targetUsername != null && targetUsername.length > 0 && targetUsername !== localUsername) {
         peerConnection.createOffer()
             .then(function (offer) {
                 peerConnection.setLocalDescription(offer);
@@ -96,6 +94,7 @@ function call(callToUsername) {
                 log(error);
             });
     } else {
+        targetUsername = null;
         alert("Please, enter a valid username to call");
     }
 }

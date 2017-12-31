@@ -19,10 +19,6 @@ $(document.body).on('click', '.callLaunch', function (e) {
     });
 });
 
-$(document.body).on('click', '#respondCall', function (e) {
-    call(targetUsername);
-});
-
 $(document.body).on('click', '#ignoreCall', function (e) {
     send({
         type: "initCallKO"
