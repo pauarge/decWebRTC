@@ -138,11 +138,8 @@ function handleLogin() {
         .then(function (myStream) {
             localVideo.srcObject = myStream;
 
-            let configuration = {
-                "iceServers": [{"urls": "stun:stun.l.google.com:19302"}],
-            };
-
-            peerConnection = new RTCPeerConnection(configuration);
+            let RTCConfig = {"iceServers": [{"urls": iceServersUrls}]};
+            peerConnection = new RTCPeerConnection(RTCConfig);
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
             sendChannel.binaryType = 'arraybuffer';
@@ -244,7 +241,10 @@ function handleLeave() {
 function handleUsers(users, peers) {
     $('#availableUsersList').empty();
     $('#peerList').empty();
+    iceServersUrls = [];
     for (let i in users) {
+        let addr = users[i].split(":")[0] + ":3478";
+        iceServersUrls.append(addr);
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }

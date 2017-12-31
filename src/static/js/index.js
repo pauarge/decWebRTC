@@ -6,6 +6,7 @@ let sendChannel = null;
 let receiveChannel = null;
 
 let wsAddr = "ws://127.0.0.1:8080/echo";
+let iceServersUrls = [];
 let mediaConstrains = {
     video: true,
     audio: false

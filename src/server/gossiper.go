@@ -2,11 +2,11 @@ package server
 
 import (
 	"net"
-
 	"log"
 	"sync"
-	"github.com/gorilla/websocket"
 	"strconv"
+	"github.com/gorilla/websocket"
+	"github.com/pauarge/decWebRTC/src/stund"
 )
 
 type Gossiper struct {
@@ -28,7 +28,7 @@ type Gossiper struct {
 }
 
 func NewGossiper(gossipPort int, name, peers string) *Gossiper {
-	gossipAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:" + strconv.Itoa(gossipPort))
+	gossipAddr, err := net.ResolveUDPAddr("udp4", "0.0.0.0:"+strconv.Itoa(gossipPort))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,8 +54,9 @@ func NewGossiper(gossipPort int, name, peers string) *Gossiper {
 
 func (g *Gossiper) Start(guiPort, rtimer int) {
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(3)
 	go g.listenGUI(guiPort)
+	go stund.RunStun()
 	go g.listenGossip(wg)
 	go g.routeRumorGenerator(wg, rtimer)
 	go g.antiEntropy(wg)
