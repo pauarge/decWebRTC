@@ -248,7 +248,7 @@ function handleLeave() {
 function handleUsers(users, peers) {
     $('#availableUsersList').empty();
     $('#peerList').empty();
-    iceServersUrls = [];
+    //iceServersUrls = [];
     for (let i in users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
@@ -256,7 +256,7 @@ function handleUsers(users, peers) {
     for (let i in peers) {
         let IP = peers[i].split(":")[0];
         let addr = "stun:" + IP + ":3478";
-        iceServersUrls.push(addr);
+        //iceServersUrls.push(addr);
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
     }
 }
