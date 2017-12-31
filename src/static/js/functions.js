@@ -5,6 +5,13 @@ function log(text) {
     console.log("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+function isPrivateIP(ip) {
+    let parts = ip.split('.');
+    return parts[0] === '10' ||
+        (parts[0] === '172' && (parseInt(parts[1], 10) >= 16 && parseInt(parts[1], 10) <= 31)) ||
+        (parts[0] === '192' && parts[1] === '168');
+}
+
 function send(message) {
     message.name = localUsername;
     message.target = targetUsername;
@@ -247,8 +254,11 @@ function handleUsers(users, peers) {
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
     for (let i in peers) {
-        let addr = "stun:" + peers[i].split(":")[0] + ":3478";
-        iceServersUrls.push(addr);
+        let IP = peers[i].split(":")[0];
+        if (!isPrivateIP(IP)) {
+            let addr = "stun:" + IP + ":3478";
+            iceServersUrls.push(addr);
+        }
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
     }
 }
