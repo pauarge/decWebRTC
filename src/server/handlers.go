@@ -66,32 +66,29 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 }
 
 func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAddr) {
-	g.wantLock.RLock()
-	wantMsgOrigin := g.want[msg.Origin]
-	g.wantLock.RUnlock()
+	if msg.Origin != g.name {
+		g.wantLock.RLock()
+		wantMsgOrigin := g.want[msg.Origin]
+		g.wantLock.RUnlock()
 
-	if wantMsgOrigin > msg.Id && msg.Origin != g.name && msg.LastPort == nil && msg.LastIP == nil {
-		g.nextHopLock.Lock()
-		g.nextHop[msg.Origin] = relay
-		g.nextHopLock.Unlock()
-		g.sendUserList()
-	} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
-		g.wantLock.Lock()
-		g.want[msg.Origin] = msg.Id + 1
-		g.wantLock.Unlock()
-
-		if msg.Origin != g.name {
+		if msg.LastPort == nil && msg.LastIP == nil {
 			g.nextHopLock.Lock()
 			g.nextHop[msg.Origin] = relay
 			g.nextHopLock.Unlock()
 			g.sendUserList()
 		}
 
-		g.sendStatusPacket(relay)
+		if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
+			g.wantLock.Lock()
+			g.want[msg.Origin] = msg.Id + 1
+			g.wantLock.Unlock()
 
-		msg.LastIP = &relay.IP
-		msg.LastPort = &relay.Port
-		g.iterativeRumorMongering(getRelayStr(relay), msg)
+			g.sendStatusPacket(relay)
+
+			msg.LastIP = &relay.IP
+			msg.LastPort = &relay.Port
+			g.iterativeRumorMongering(getRelayStr(relay), msg)
+		}
 	}
 }
 
