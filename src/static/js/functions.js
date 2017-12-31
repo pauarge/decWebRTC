@@ -243,12 +243,12 @@ function handleUsers(users, peers) {
     $('#peerList').empty();
     iceServersUrls = [];
     for (let i in users) {
-        let addr = users[i].split(":")[0] + ":3478";
-        iceServersUrls.push(addr);
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
     }
     for (let i in peers) {
+        let addr = "stun:" + peers[i].split(":")[0] + ":3478";
+        iceServersUrls.push(addr);
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
     }
 }
