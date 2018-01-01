@@ -46,7 +46,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 					HopLimit:    common.MaxHops,
 					Data:        req,
 				}
-				g.SendPrivateMessage(msg)
+				g.sendPrivateMessage(msg)
 			}
 			g.sock = nil
 			log.Println("Web client disconnected")
@@ -91,6 +91,6 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			HopLimit:    common.MaxHops,
 			Data:        data,
 		}
-		g.SendPrivateMessage(msg)
+		g.sendPrivateMessage(msg)
 	}
 }

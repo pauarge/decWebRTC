@@ -26,7 +26,7 @@ func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
 	}
 }
 
-func (g *Gossiper) SendPrivateMessage(msg common.PrivateMessage) {
+func (g *Gossiper) sendPrivateMessage(msg common.PrivateMessage) {
 	p := common.GossipPacket{Private: &msg}
 	packetBytes, err := protobuf.Encode(&p)
 	if err != nil {

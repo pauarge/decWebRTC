@@ -68,7 +68,7 @@ func (s *Server) serveConn(c net.PacketConn, res, req *stun.Message) error {
 		log.Printf("ReadFrom: %v", err)
 		return nil
 	}
-	log.Printf("read %d bytes from %s", n, addr)
+	log.Printf("Stun: read %d bytes from %s", n, addr)
 	if _, err = req.Write(buf[:n]); err != nil {
 		log.Printf("Write: %v", err)
 		return err
@@ -115,6 +115,6 @@ func ListenUDPAndServe(serverNet, laddr string) error {
 
 func RunStun() {
 	address := fmt.Sprintf("0.0.0.0:%d", stun.DefaultPort)
-	log.Println("gortc/stund listening on", address, "via udp")
+	log.Println("Stun server listening on", address, "via udp")
 	log.Fatal(ListenUDPAndServe("udp", address))
 }
