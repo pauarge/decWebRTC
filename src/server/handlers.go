@@ -66,14 +66,17 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 		wantMsgOrigin := g.want[msg.Origin]
 		g.wantLock.RUnlock()
 
-		if msg.LastPort == nil && msg.LastIP == nil {
+		if wantMsgOrigin > msg.Id && msg.LastPort == nil && msg.LastIP == nil {
 			g.nextHopLock.Lock()
 			g.nextHop[msg.Origin] = relay
 			g.nextHopLock.Unlock()
 			g.sendUserList()
-		}
+		} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
+			g.nextHopLock.Lock()
+			g.nextHop[msg.Origin] = relay
+			g.nextHopLock.Unlock()
+			g.sendUserList()
 
-		if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
 			g.wantLock.Lock()
 			g.want[msg.Origin] = msg.Id + 1
 			g.wantLock.Unlock()
