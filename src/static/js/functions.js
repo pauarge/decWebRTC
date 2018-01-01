@@ -253,8 +253,10 @@ function handleCandidate(candidate) {
 }
 
 function handleLeave() {
-    targetUsername = null;
+    localVideo.srcObject.stop();
+    localVideo.srcObject = null;
     remoteVideo.srcObject = null;
+    targetUsername = null;
 
     peerConnection.close();
     peerConnection.onicecandidate = null;

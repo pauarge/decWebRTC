@@ -15,7 +15,6 @@ $(document.body).on('click', '.callLaunch', function (e) {
         $('#callingName').text(targetUsername);
         $('.modal').modal('hide');
         $('#callingModal').modal('show');
-        alert("Sending initCall");
         send({
             type: "initCall"
         });
