@@ -288,8 +288,6 @@ function handleUsers(users, peers) {
         }
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>');
     }
-
-    log(iceServersUrls);
 }
 
 function handleGetUserMediaError(e) {
