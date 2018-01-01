@@ -68,7 +68,7 @@ func (s *Server) serveConn(c net.PacketConn, res, req *stun.Message) error {
 		log.Printf("ReadFrom: %v", err)
 		return nil
 	}
-	// s.log().Printf("read %d bytes from %s", n, addr)
+	log.Printf("read %d bytes from %s", n, addr)
 	if _, err = req.Write(buf[:n]); err != nil {
 		log.Printf("Write: %v", err)
 		return err
