@@ -25,6 +25,34 @@ function send(message) {
     }
 }
 
+function sendData() {
+    let file = fileInput.files[0];
+    log('File is ' + [file.name, file.size, file.type, file.lastModified].join(' '));
+
+    if (file.size === 0) {
+        return;
+    }
+
+    sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
+
+    let chunkSize = 16384;
+    let sliceFile = function (offset) {
+        let reader = new window.FileReader();
+        reader.onload = (function () {
+            return function (e) {
+                sendChannel.send(e.target.result);
+                if (file.size > offset + e.target.result.byteLength) {
+                    window.setTimeout(sliceFile, 0, offset + chunkSize);
+                }
+                $('#sendProgress').width(offset + e.target.result.byteLength);
+            };
+        })(file);
+        let slice = file.slice(offset, offset + chunkSize);
+        reader.readAsArrayBuffer(slice);
+    };
+    sliceFile(0);
+}
+
 function connect() {
     connection = new WebSocket(wsAddr);
 
@@ -107,7 +135,7 @@ function initMedia(callback) {
             peerConnection.ontrack = handlePeerConnectionTrack;
             peerConnection.onicecandidate = handlePeerConnectionICECandidate;
         })
-        .then(callback())
+        .then(callback)
         .catch(handleGetUserMediaError);
 }
 
@@ -299,32 +327,4 @@ function handleFileInputChange() {
     } else {
         sendData();
     }
-}
-
-function sendData() {
-    let file = fileInput.files[0];
-    log('File is ' + [file.name, file.size, file.type, file.lastModified].join(' '));
-
-    if (file.size === 0) {
-        return;
-    }
-
-    sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
-
-    let chunkSize = 16384;
-    let sliceFile = function (offset) {
-        let reader = new window.FileReader();
-        reader.onload = (function () {
-            return function (e) {
-                sendChannel.send(e.target.result);
-                if (file.size > offset + e.target.result.byteLength) {
-                    window.setTimeout(sliceFile, 0, offset + chunkSize);
-                }
-                $('#sendProgress').width(offset + e.target.result.byteLength);
-            };
-        })(file);
-        let slice = file.slice(offset, offset + chunkSize);
-        reader.readAsArrayBuffer(slice);
-    };
-    sliceFile(0);
 }
