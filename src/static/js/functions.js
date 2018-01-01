@@ -146,7 +146,7 @@ function handleLogin() {
             localVideo.srcObject = myStream;
 
             let RTCConfig = {"iceServers": [{"urls": iceServersUrls}]};
-            peerConnection = new webkitRTCPeerConnection(RTCConfig);
+            peerConnection = new RTCPeerConnection(RTCConfig);
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
             sendChannel.binaryType = 'arraybuffer';
