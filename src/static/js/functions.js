@@ -107,7 +107,7 @@ function initMedia(callback) {
             peerConnection.ontrack = handlePeerConnectionTrack;
             peerConnection.onicecandidate = handlePeerConnectionICECandidate;
         })
-        .then(callback)
+        .then(callback())
         .catch(handleGetUserMediaError);
 }
 
