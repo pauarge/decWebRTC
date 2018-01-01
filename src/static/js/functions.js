@@ -225,8 +225,6 @@ function handleCandidate(candidate) {
 
 function handleLeave() {
     targetUsername = null;
-
-    remoteVideo.src = null;
     remoteVideo.srcObject = null;
 
     peerConnection.close();
