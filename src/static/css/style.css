@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 #remoteVideo {
     position: absolute;
     min-width: 100%;
