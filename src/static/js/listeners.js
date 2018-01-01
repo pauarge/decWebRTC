@@ -33,7 +33,7 @@ document.getElementById("message").addEventListener('keypress', function (e) {
     let key = e.which || e.keyCode;
     if (key === 13) {
         let message = this.value;
-        log("Sending message", message);
+        log("Sending message " + message);
         sendChannel.send(JSON.stringify({'text': message}));
         $('.feed').append("<div class='me'><div class='message'>" + (this.value) + "<div class='meta'>me • " + currentTime.toLocaleTimeString() + "</div></div></div>");
         $(".feed").scrollTop($(".feed")[0].scrollHeight);
