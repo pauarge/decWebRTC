@@ -43,6 +43,7 @@ func basicProcess(addr net.Addr, b []byte, req, res *stun.Message) error {
 	case *net.UDPAddr:
 		ip = a.IP
 		port = a.Port
+		log.Println("STUN dected:", ip, port)
 	default:
 		panic(fmt.Sprintf("unknown addr: %v", addr))
 	}
@@ -97,6 +98,8 @@ func (s *Server) Serve(c net.PacketConn) error {
 		if err := s.serveConn(c, res, req); err != nil {
 			log.Printf("serve: %v", err)
 			return err
+		} else {
+			log.Println(res)
 		}
 		res.Reset()
 		req.Reset()

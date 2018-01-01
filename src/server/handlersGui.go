@@ -63,7 +63,6 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		switch data.Type {
 
 		case "peer":
-			log.Println("Adding peer from GUI")
 			g.peersLock.Lock()
 			g.peers[data.NewPeer] = true
 			g.peersLock.Unlock()
@@ -71,20 +70,16 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 
 		case "answer":
-			log.Println("Received an answer")
 			connectedUser = data.Target
 
 		case "candidate":
-			log.Println("Received a candidate")
 			connectedUser = data.Target
 
 		case "leave":
 			connectedUser = ""
-
-		default:
-			log.Println("Received", data.Type)
 		}
 
+		log.Println("Received from GUI: ", data.Type)
 		msg := common.PrivateMessage{
 			Origin:      g.name,
 			Destination: data.Target,

@@ -252,8 +252,10 @@ function handleUsers(users, peers) {
     }
     for (let i in peers) {
         let IP = peers[i].split(":")[0];
-        let addr = "stun:" + IP + ":3478";
-        iceServersUrls.push(addr);
+        if (!isPrivateIP(IP)) {
+            let addr = "stun:" + IP + ":3478";
+            iceServersUrls.push(addr);
+        }
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
     }
 }
