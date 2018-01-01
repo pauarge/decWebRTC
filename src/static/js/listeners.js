@@ -10,12 +10,14 @@ $(document.body).on('click', '#hangUpBtn', function () {
 });
 
 $(document.body).on('click', '.callLaunch', function (e) {
-    targetUsername = $(this).data('user');
-    $('#callingName').text(targetUsername);
-    $('.modal').modal('hide');
-    $('#callingModal').modal('show');
-    send({
-        type: "initCall"
+    initMedia(function() {
+        targetUsername = $(this).data('user');
+        $('#callingName').text(targetUsername);
+        $('.modal').modal('hide');
+        $('#callingModal').modal('show');
+        send({
+            type: "initCall"
+        });
     });
 });
 

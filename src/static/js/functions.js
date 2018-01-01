@@ -39,7 +39,7 @@ function connect() {
         switch (data.Type) {
             case "login":
                 localUsername = data.Name;
-                handleLogin();
+                document.querySelector('#username-placeholder').textContent = localUsername;
                 break;
             case "initCall":
                 handleInitCall(data.Name);
@@ -86,20 +86,47 @@ function handleOnDataChannel(event) {
     receiveChannel.onmessage = handleReceivedData;
 }
 
+function initMedia(callback) {
+    navigator.mediaDevices.getUserMedia(mediaConstrains)
+        .then(function (myStream) {
+            localVideo.srcObject = myStream;
+
+            let RTCConfig = {"iceServers": [{"urls": iceServersUrls}]};
+            peerConnection = new RTCPeerConnection(RTCConfig);
+
+            sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
+            sendChannel.binaryType = 'arraybuffer';
+            sendChannel.ononpen = handleSendChannelStatusChange;
+            sendChannel.onclose = handleSendChannelStatusChange;
+            sendChannel.onerror = handleSendChannelStatusChange;
+
+            peerConnection.addStream(myStream);
+
+            peerConnection.onremovestream = handleLeave;
+            peerConnection.ondatachannel = handleOnDataChannel;
+            peerConnection.ontrack = handlePeerConnectionTrack;
+            peerConnection.onicecandidate = handlePeerConnectionICECandidate;
+        })
+        .then(callback)
+        .catch(handleGetUserMediaError);
+}
+
 function call() {
     if (targetUsername != null && targetUsername.length > 0 && targetUsername !== localUsername) {
-        peerConnection.createOffer()
-            .then(function (offer) {
-                peerConnection.setLocalDescription(offer);
-                send({
-                    type: "offer",
-                    offer: offer
+        initMedia(function () {
+            peerConnection.createOffer()
+                .then(function (offer) {
+                    peerConnection.setLocalDescription(offer);
+                    send({
+                        type: "offer",
+                        offer: offer
+                    });
+                })
+                .catch(function (error) {
+                    alert("Error when creating an offer");
+                    log(error);
                 });
-            })
-            .catch(function (error) {
-                alert("Error when creating an offer");
-                log(error);
-            });
+        });
     } else {
         targetUsername = null;
         alert("Please, enter a valid username to call");
@@ -136,32 +163,6 @@ function handleReceivedData(e) {
             currentFile = data;
         }
     }
-}
-
-function handleLogin() {
-    document.querySelector('#username-placeholder').textContent = localUsername;
-
-    navigator.mediaDevices.getUserMedia(mediaConstrains)
-        .then(function (myStream) {
-            localVideo.srcObject = myStream;
-
-            let RTCConfig = {"iceServers": [{"urls": iceServersUrls}]};
-            peerConnection = new RTCPeerConnection(RTCConfig);
-
-            sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
-            sendChannel.binaryType = 'arraybuffer';
-            sendChannel.ononpen = handleSendChannelStatusChange;
-            sendChannel.onclose = handleSendChannelStatusChange;
-            sendChannel.onerror = handleSendChannelStatusChange;
-
-            peerConnection.addStream(myStream);
-
-            peerConnection.onremovestream = handleLeave;
-            peerConnection.ondatachannel = handleOnDataChannel;
-            peerConnection.ontrack = handlePeerConnectionTrack;
-            peerConnection.onicecandidate = handlePeerConnectionICECandidate;
-        })
-        .catch(handleGetUserMediaError);
 }
 
 function handlePeerConnectionTrack(event) {
@@ -239,7 +240,6 @@ function handleLeave() {
     $('#modalUsers').modal('show');
     $('#callStatusBig').text("Not in an active call.");
     resetStopWatch();
-    handleLogin();
 }
 
 function handleUsers(users, peers) {
@@ -256,8 +256,10 @@ function handleUsers(users, peers) {
             let addr = "stun:" + IP + ":3478";
             iceServersUrls.push(addr);
         }
-        $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>')
+        $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>');
     }
+
+    log(iceServersUrls);
 }
 
 function handleGetUserMediaError(e) {
