@@ -9,12 +9,6 @@ import (
 func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAddr) {
 	relayStr := getRelayStr(relay)
 
-	g.channelsLock.RLock()
-	if ch, ok := g.channels[relayStr]; ok {
-		ch <- true
-	}
-	g.channelsLock.RUnlock()
-
 	remoteWant := parseWant(msg)
 	g.wantLock.RLock()
 	localWant := g.want

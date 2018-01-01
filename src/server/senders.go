@@ -3,7 +3,6 @@ package server
 import (
 	"net"
 	"log"
-	"time"
 	"github.com/dedis/protobuf"
 	"github.com/pauarge/decWebRTC/src/common"
 )
@@ -65,30 +64,6 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			delete(g.peers, address)
 			g.peersLock.Unlock()
 			g.sendUserList()
-		} else {
-			g.channelsLock.Lock()
-			g.channels[address] = make(chan bool)
-			g.channelsLock.Unlock()
-			ticker := time.NewTicker(time.Second * common.TimeOutSecs)
-			go func() {
-				for range ticker.C {
-					g.channelsLock.Lock()
-					if ch, ok := g.channels[address]; ok {
-						ch <- true
-						log.Println("Timeout on mongering")
-					}
-					g.channelsLock.Unlock()
-					return
-				}
-			}()
-			g.channelsLock.RLock()
-			ch := g.channels[address]
-			g.channelsLock.RUnlock()
-			_ = <-ch
-			ticker.Stop()
-			g.channelsLock.Lock()
-			delete(g.channels, address)
-			g.channelsLock.Unlock()
 		}
 	}
 }
