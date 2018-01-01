@@ -79,7 +79,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 			connectedUser = ""
 		}
 
-		log.Println("Received from GUI: ", data.Type)
+		log.Println("Received from GUI:", data.Type)
 		msg := common.PrivateMessage{
 			Origin:      g.name,
 			Destination: data.Target,
