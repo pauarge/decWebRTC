@@ -119,7 +119,15 @@ function initMedia(callback) {
         .then(function (myStream) {
             localVideo.srcObject = myStream;
 
-            let RTCConfig = {"iceServers": [{"urls": "stun:159.89.27.97:3478"}]};
+            let RTCConfig = {"iceServers": [
+                    {
+                        'urls': [
+                            'turn:159.29.27.97:7788', // coTURN 7788+8877
+                        ],
+                        'username': '',
+                        'credential': ''
+                    }
+                ]};
             peerConnection = new RTCPeerConnection(RTCConfig);
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
