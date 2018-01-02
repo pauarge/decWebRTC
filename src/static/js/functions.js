@@ -15,14 +15,9 @@ function isPrivateIP(ip) {
 function send(message) {
     message.name = localUsername;
     message.target = targetUsername;
-    if (connection.readyState === connection.CLOSED || connection.readyState === connection.CLOSING) {
-        connect();
-        // TODO: Retry after reconnection
-    } else {
-        let msgJSON = JSON.stringify(message);
-        log("Sending message: " + msgJSON);
-        connection.send(msgJSON);
-    }
+    let msgJSON = JSON.stringify(message);
+    log("Sending message: " + msgJSON);
+    connection.send(msgJSON);
 }
 
 function sendData() {
@@ -101,6 +96,7 @@ function connect() {
 
     connection.onclose = function() {
         log("Disconnected from signaling server");
+        connect();
     };
 
     connection.onerror = function (err) {
@@ -151,7 +147,7 @@ function initMedia(callback) {
 
             peerConnection.addStream(myStream);
 
-            //peerConnection.onremovestream = handleLeave;
+            peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = handleOnDataChannel;
             peerConnection.ontrack = handlePeerConnectionTrack;
             peerConnection.onicecandidate = handlePeerConnectionICECandidate;
