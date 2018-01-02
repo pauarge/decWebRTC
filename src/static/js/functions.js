@@ -99,6 +99,10 @@ function connect() {
         }
     };
 
+    connection.onclose = function() {
+        log("Disconnected from signaling server");
+    };
+
     connection.onerror = function (err) {
         log("Got connection error", err);
     };
@@ -132,13 +136,22 @@ function initMedia(callback) {
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
             sendChannel.binaryType = 'arraybuffer';
-            sendChannel.ononpen = handleSendChannelStatusChange;
-            sendChannel.onclose = handleSendChannelStatusChange;
-            sendChannel.onerror = handleSendChannelStatusChange;
+
+            sendChannel.ononpen = function() {
+                log("Data channel opened");
+            };
+            sendChannel.onclose = function() {
+                log("Data channel closed");
+                sendChannel = null;
+            };
+            sendChannel.onerror = function(e){
+                log("Error on data channel " + e);
+                sendChannel = null;
+            };
 
             peerConnection.addStream(myStream);
 
-            peerConnection.onremovestream = handleLeave;
+            //peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = handleOnDataChannel;
             peerConnection.ontrack = handlePeerConnectionTrack;
             peerConnection.onicecandidate = handlePeerConnectionICECandidate;
@@ -320,18 +333,6 @@ function handleGetUserMediaError(e) {
     }
 
     handleLeave();
-}
-
-function handleSendChannelStatusChange() {
-    if (sendChannel) {
-        let state = sendChannel.readyState;
-        if (state === "open") {
-            log("Channel opened");
-        } else {
-            log("Channel closed");
-            sendChannel = null;
-        }
-    }
 }
 
 function handleFileInputChange() {
