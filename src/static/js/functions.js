@@ -236,9 +236,8 @@ function handleInitCall(name) {
 }
 
 function handleInitCallKO() {
-    $('.modal').modal('hide');
-    $('#modalUsers').modal('show');
     alert("Call was rejected");
+    handleLeave();
 }
 
 function handleOffer(offer, name) {
