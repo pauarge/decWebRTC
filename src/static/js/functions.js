@@ -253,11 +253,15 @@ function handleOffer(offer, name) {
 
 function handleAnswer(answer) {
     log("Processed answer");
-    peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    peerConnection.setRemoteDescription(new RTCSessionDescription(answer)).catch(function(err) {
+        alert(err);
+    });
 }
 
 function handleCandidate(candidate) {
-    peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(function (err) {
+        alert(err);
+    });
 }
 
 function handleLeave() {
