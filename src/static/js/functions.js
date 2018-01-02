@@ -253,14 +253,16 @@ function handleOffer(offer, name) {
 
 function handleAnswer(answer) {
     log("Processed answer");
-    peerConnection.setRemoteDescription(new RTCSessionDescription(answer)).catch(function(err) {
-        alert(err);
+    peerConnection.setRemoteDescription(new RTCSessionDescription(answer)).catch(function (err) {
+        alert("Error handling answer: " + err);
+        handleLeave();
     });
 }
 
 function handleCandidate(candidate) {
     peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(function (err) {
-        alert(err);
+        alert("Error handling candidate" + err);
+        handleLeave();
     });
 }
 
