@@ -122,14 +122,9 @@ function initMedia(callback) {
             let RTCConfig = {
                 iceServers: [
                     {
-                        urls: 'stun:159.29.27.97:3478'
+                        urls: iceServersUrls
                         //urls: 'stun:stun.l.google.com:19302'
                     },
-                    {
-                        urls: "turn:159.29.27.97:3479",
-                        username: "gossip",
-                        credential: "gossip"
-                    }
                 ]
             };
 
