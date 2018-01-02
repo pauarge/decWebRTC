@@ -125,11 +125,11 @@ function initMedia(callback) {
                         urls: 'stun:159.29.27.97:3478'
                     },
 
-                    {
+                    /*{
                         urls: "turn:159.29.27.97:3479",
                         username: "gossip",
                         credential: "gossip"
-                    }
+                    }*/
                 ]
             };
 
@@ -266,7 +266,7 @@ function handleCandidate(candidate) {
 }
 
 function handleLeave() {
-    localVideo.srcObject.stop();
+    localVideo.srcObject.getTracks().forEach(track => track.stop());
     localVideo.srcObject = null;
     remoteVideo.srcObject = null;
     targetUsername = null;
