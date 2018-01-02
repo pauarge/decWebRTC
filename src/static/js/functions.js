@@ -119,7 +119,7 @@ function initMedia(callback) {
         .then(function (myStream) {
             localVideo.srcObject = myStream;
 
-            let RTCConfig = {"iceServers": [{"urls": "turn:159.89.27.97:7788"}]};
+            let RTCConfig = {"iceServers": [{"urls": "stun:159.89.27.97:3478"}]};
             peerConnection = new RTCPeerConnection(RTCConfig);
 
             sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
@@ -301,7 +301,7 @@ function handleGetUserMediaError(e) {
         case "PermissionDeniedError":
             break;
         default:
-            alert("Error opening your camera and/or microphone: " + e.message);
+            alert(e.message);
             break;
     }
 
