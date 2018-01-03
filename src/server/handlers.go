@@ -4,6 +4,7 @@ import (
 	"net"
 	"log"
 	"github.com/pauarge/decWebRTC/src/common"
+	"strconv"
 )
 
 func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAddr) {
@@ -72,6 +73,10 @@ func (g *Gossiper) handleRumorMessage(msg common.RumorMessage, relay *net.UDPAdd
 			g.nextHopLock.Unlock()
 			g.sendUserList()
 		} else if wantMsgOrigin <= msg.Id || wantMsgOrigin == 0 {
+			if msg.LastPort != nil && msg.LastIP != nil {
+				g.addPeer(msg.LastIP.String() + ":" + strconv.Itoa(*msg.LastPort))
+			}
+
 			g.nextHopLock.Lock()
 			g.nextHop[msg.Origin] = relay
 			g.nextHopLock.Unlock()
