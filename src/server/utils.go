@@ -51,6 +51,27 @@ func parseWant(msg common.StatusPacket) map[string]uint32 {
 	return res
 }
 
+func (g *Gossiper) addPeer(addr string) {
+	g.peersLock.RLock()
+	_, ok := g.peers[addr]
+	g.peersLock.RUnlock()
+
+	// Only checking peer connectivity if we don't have it
+	if !ok {
+		timeout := time.Duration(common.TimeOutSecs * time.Second)
+		_, err := net.DialTimeout("udp", addr, timeout)
+		if err != nil {
+			log.Println("Peer unreachable:", err)
+		} else {
+			log.Println("Added peer", addr)
+			g.peersLock.Lock()
+			g.peers[addr] = true
+			g.peersLock.Unlock()
+			g.sendUserList()
+		}
+	}
+}
+
 func (g *Gossiper) encodeWant() common.StatusPacket {
 	defer g.wantLock.RUnlock()
 	g.wantLock.RLock()

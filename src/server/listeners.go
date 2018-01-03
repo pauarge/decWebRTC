@@ -27,9 +27,7 @@ func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		g.peersLock.Lock()
-		g.peers[getRelayStr(relay)] = true
-		g.peersLock.Unlock()
+		go g.addPeer(getRelayStr(relay))
 		m := common.GossipPacket{}
 		err = protobuf.Decode(buf[0:n], &m)
 		if err == nil {

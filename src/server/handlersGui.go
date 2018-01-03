@@ -63,10 +63,7 @@ func (g *Gossiper) echoHandler(w http.ResponseWriter, r *http.Request) {
 		switch data.Type {
 
 		case "peer":
-			g.peersLock.Lock()
-			g.peers[data.NewPeer] = true
-			g.peersLock.Unlock()
-			g.sendUserList()
+			g.addPeer(data.NewPeer)
 			continue
 
 		case "answer":
