@@ -48,11 +48,14 @@ func NewGossiper(gossipPort int, name, peers string) *Gossiper {
 	}
 }
 
-func (g *Gossiper) Start(guiPort, rtimer int) {
+func (g *Gossiper) Start(guiPort, rtimer int, disableGui bool) {
+	if !disableGui {
+		go g.listenGUI(guiPort)
+	}
+	go stund.RunStun()
+
 	var wg sync.WaitGroup
 	wg.Add(3)
-	go g.listenGUI(guiPort)
-	go stund.RunStun()
 	go g.listenGossip(wg)
 	go g.routeRumorGenerator(wg, rtimer)
 	go g.antiEntropy(wg)

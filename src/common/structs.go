@@ -58,15 +58,3 @@ type JSONRequest struct {
 // PeerList sorting
 
 type PeerStatusList []PeerStatus
-
-func (a PeerStatusList) Len() int      { return len(a) }
-func (a PeerStatusList) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a PeerStatusList) Less(i, j int) bool {
-	if a[i].Identifier < a[j].Identifier {
-		return true
-	}
-	if a[i].Identifier > a[j].Identifier {
-		return false
-	}
-	return a[i].NextId < a[j].NextId
-}

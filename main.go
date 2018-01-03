@@ -13,12 +13,13 @@ func main() {
 	peersPtr := flag.String("peers", "", "List of peers")
 	rtimerPtr := flag.Int("rtimer", common.DefaultRTimer, "How many seconds the peer waits between two "+
 		"route rumor messagese conds for rtimer")
+	disableGuiPtr := flag.Bool("disableGui", false, "Disable GUI")
 	flag.Parse()
 
 	if *namePtr == "" {
 		flag.PrintDefaults()
 	} else {
 		g := server.NewGossiper(*gossipPortPtr, *namePtr, *peersPtr)
-		g.Start(*guiPortPtr, *rtimerPtr)
+		g.Start(*guiPortPtr, *rtimerPtr, *disableGuiPtr)
 	}
 }

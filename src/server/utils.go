@@ -81,8 +81,6 @@ func (g *Gossiper) encodeWant() common.StatusPacket {
 		x = append(x, common.PeerStatus{Identifier: k, NextId: g.want[k]})
 	}
 
-	// TODO: Do we really need to sort this?
-	sort.Sort(common.PeerStatusList(x))
 	return common.StatusPacket{Want: x}
 }
 
