@@ -94,7 +94,7 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 	msg.HopLimit -= 1
 	if msg.Destination == g.name {
 		if g.sock != nil {
-			log.Println("Received a private message and forwarded to GUI")
+			log.Printf("Received a PM of type %s and forwarded to GUI\n", msg.Data.Type)
 			g.sockLock.Lock()
 			g.sock.WriteJSON(msg.Data)
 			g.sockLock.Unlock()
