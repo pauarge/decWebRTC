@@ -112,7 +112,7 @@ func (g *Gossiper) handlePrivateMessage(msg common.PrivateMessage) {
 			g.sendPrivateMessage(res)
 		}
 	} else if msg.HopLimit > 0 {
-		log.Println("Forwaring private message")
+		log.Println("Forwarding PM of type", msg.Data.Type)
 		g.sendPrivateMessage(msg)
 	}
 }
