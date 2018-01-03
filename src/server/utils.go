@@ -88,13 +88,15 @@ func (g *Gossiper) getPeerList(exclude string) []string {
 	defer g.peersLock.RUnlock()
 	g.peersLock.RLock()
 
-	var p []string
+	var peers []string
 	for i := range g.peers {
 		if i != exclude {
-			p = append(p, i)
+			peers = append(peers, i)
 		}
 	}
-	return p
+
+	sort.Strings(peers)
+	return peers
 }
 
 func (g *Gossiper) sendUserList() {
