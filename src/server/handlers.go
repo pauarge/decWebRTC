@@ -35,10 +35,10 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 			break
 		}
 	}
-	g.wantLock.RUnlock()
 
 	log.Println("Known peers:", g.getPeerList(""))
 	log.Println("Local vector clock:", localWant)
+	g.wantLock.RUnlock()
 
 	if dest != (common.MapKey{}) {
 		msg := common.RumorMessage{
