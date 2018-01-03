@@ -94,7 +94,7 @@ function connect() {
         }
     };
 
-    connection.onclose = function() {
+    connection.onclose = function () {
         log("Disconnected from signaling server");
         connect();
     };
@@ -115,7 +115,7 @@ function handleOnDataChannel(event) {
 }
 
 function initMedia(callback) {
-    navigator.mediaDevices.getUserMedia(mediaConstrains)
+    navigator.mediaDevices.getUserMedia(mediaConstraints)
         .then(function (myStream) {
             localVideo.srcObject = myStream;
 
@@ -129,28 +129,27 @@ function initMedia(callback) {
             };
 
             peerConnection = new RTCPeerConnection(RTCConfig);
-
-            sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
-            sendChannel.binaryType = 'arraybuffer';
-
-            sendChannel.ononpen = function() {
-                log("Data channel opened");
-            };
-            sendChannel.onclose = function() {
-                log("Data channel closed");
-                sendChannel = null;
-            };
-            sendChannel.onerror = function(e){
-                log("Error on data channel " + e);
-                sendChannel = null;
-            };
-
             peerConnection.addStream(myStream);
 
             peerConnection.onremovestream = handleLeave;
             peerConnection.ondatachannel = handleOnDataChannel;
             peerConnection.ontrack = handlePeerConnectionTrack;
             peerConnection.onicecandidate = handlePeerConnectionICECandidate;
+
+            sendChannel = peerConnection.createDataChannel("sendChannel", {reliable: true});
+            sendChannel.binaryType = 'arraybuffer';
+
+            sendChannel.ononpen = function () {
+                log("Data channel opened");
+            };
+            sendChannel.onclose = function () {
+                log("Data channel closed");
+                sendChannel = null;
+            };
+            sendChannel.onerror = function (e) {
+                log("Error on data channel " + e);
+                sendChannel = null;
+            };
         })
         .then(callback)
         .catch(handleGetUserMediaError);
@@ -215,6 +214,7 @@ function handlePeerConnectionTrack(event) {
     $('#callStatusBig').text("Call with " + targetUsername + ".");
     $('.modal').modal('hide');
     $('#hangUpBtn').prop('disabled', false);
+    $('#screenShareLaunch').prop('disabled', false);
     $('#sendFileLaunch').prop('disabled', false);
     startStopWatch();
 }
@@ -289,6 +289,7 @@ function handleLeave() {
     $('#togglearea').slideUp();
 
     $('#hangUpBtn').prop('disabled', true);
+    $('#screenShareLaunch').prop('disabled', true);
     $('#fileUploadModal').prop('disabled', true);
     $('#modalUsers').modal('show');
     $('#callStatusBig').text("Not in an active call.");
@@ -338,4 +339,12 @@ function handleFileInputChange() {
     } else {
         sendData();
     }
+}
+
+function handleScreenShare() {
+    navigator.mediaDevices.getUserMedia(screenConstraints)
+        .then(function (myStream) {
+            peerConnection.getSenders()[0].replaceTrack(myStream.getVideoTracks()[0]);
+        })
+        .catch(handleGetUserMediaError);
 }

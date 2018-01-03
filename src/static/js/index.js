@@ -5,11 +5,16 @@ let peerConnection = null;
 let sendChannel = null;
 let receiveChannel = null;
 
-let wsAddr = "ws://127.0.0.1:8080/echo";
+let wsAddr = "wss://127.0.0.1:8080/echo";
 let iceServersUrls = [];
-let mediaConstrains = {
+let mediaConstraints = {
     video: true,
     audio: false
+};
+let screenConstraints = {
+    video: {
+        mediaSource: "screen", // whole screen sharing
+    }
 };
 
 let localUsername = null;

@@ -16,7 +16,7 @@ func (g *Gossiper) listenGUI(guiPort int) {
 	http.Handle("/", http.FileServer(http.Dir("src/static/")))
 
 	log.Printf("Serving on HTTP port %d\n", guiPort)
-	log.Fatal(http.ListenAndServe(":"+ strconv.Itoa(guiPort), nil))
+	log.Fatal(http.ListenAndServeTLS(":"+ strconv.Itoa(guiPort), "src/static/server.crt", "src/static/server.key", nil))
 }
 
 func (g *Gossiper) listenGossip(wg sync.WaitGroup) {
