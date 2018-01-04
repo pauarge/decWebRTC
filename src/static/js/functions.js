@@ -345,6 +345,8 @@ function handleScreenShare() {
     navigator.mediaDevices.getUserMedia(screenConstraints)
         .then(function (myStream) {
             peerConnection.getSenders()[0].replaceTrack(myStream.getVideoTracks()[0]);
+            $('#screenShareLaunch').prop('disabled', true);
+            localVideo.srcObject = myStream;
         })
         .catch(handleGetUserMediaError);
 }
