@@ -39,6 +39,8 @@ function sendData() {
             let reader = new window.FileReader();
             reader.onload = (function () {
                 return function (e) {
+                    log("Sending chunk:");
+                    log(e.target.result);
                     sendChannel.send(e.target.result);
                     if (file.size > offset + e.target.result.byteLength) {
                         window.setTimeout(sliceFile, 0, offset + chunkSize);
@@ -112,7 +114,7 @@ function handleOnDataChannel(event) {
     receiveChannel = event.channel;
 
     receiveChannel.onopen = function () {
-        log('Data channel is open and ready to be used.');
+        log('Receive data channel is open and ready to be used.');
     };
 
     receiveChannel.onmessage = handleReceivedData;
@@ -184,9 +186,11 @@ function call() {
 function handleReceivedData(e) {
     let currentTime = new Date();
     if (typeof e.data === 'object') {
+        log("Received file data");
         receiveBuffer.push(e.data);
-        receivedSize += e.data.byteLength;
+        receivedSize += e.data.size;
         if (receivedSize === currentFile.size) {
+            log("Starting to reconstruct the file");
             let received = new window.Blob(receiveBuffer);
 
             $('.feed')
