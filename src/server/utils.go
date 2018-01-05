@@ -72,6 +72,20 @@ func (g *Gossiper) addPeer(addr string) {
 	}
 }
 
+func (g *Gossiper) deletePeer(addr string) {
+	defer g.peersLock.Unlock()
+	defer g.nextHopLock.Unlock()
+	defer g.wantLock.Unlock()
+	g.peersLock.Lock()
+	g.nextHopLock.Lock()
+	g.wantLock.Lock()
+
+	delete(g.peers, addr)
+	delete(g.nextHop, addr)
+	delete(g.want, addr)
+	g.sendUserList()
+}
+
 func (g *Gossiper) encodeWant() common.StatusPacket {
 	defer g.wantLock.RUnlock()
 	g.wantLock.RLock()

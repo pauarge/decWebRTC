@@ -17,10 +17,7 @@ func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
 		_, err = g.gossipConn.WriteToUDP(packetBytes, relay)
 		if err != nil {
 			log.Println(err)
-			g.peersLock.Lock()
-			delete(g.peers, getRelayStr(relay))
-			g.peersLock.Unlock()
-			g.sendUserList()
+			g.deletePeer(getRelayStr(relay))
 		}
 	}
 }
@@ -38,10 +35,7 @@ func (g *Gossiper) sendPrivateMessage(msg common.PrivateMessage) {
 			_, err = g.gossipConn.WriteToUDP(packetBytes, relay)
 			if err != nil {
 				log.Println(err)
-				g.peersLock.Lock()
-				delete(g.peers, getRelayStr(relay))
-				g.peersLock.Unlock()
-				g.sendUserList()
+				g.deletePeer(getRelayStr(relay))
 			}
 		} else {
 			log.Println("Could not find a next hop for sending the private message.")
@@ -60,10 +54,7 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 		_, err = g.gossipConn.WriteToUDP(packetBytes, addr)
 		if err != nil {
 			log.Println(err)
-			g.peersLock.Lock()
-			delete(g.peers, address)
-			g.peersLock.Unlock()
-			g.sendUserList()
+			g.deletePeer(address)
 		}
 	}
 }
