@@ -298,7 +298,8 @@ function handleLeave() {
 
     $('#hangUpBtn').prop('disabled', true);
     $('#screenShareLaunch').prop('disabled', true);
-    $('#fileUploadModal').prop('disabled', true);
+    $('#sendFileLaunch').prop('disabled', true);
+    $('.modal').modal('hide');
     $('#modalUsers').modal('show');
     $('#callStatusBig').text("Not in an active call.");
     resetStopWatch();
