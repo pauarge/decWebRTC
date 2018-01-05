@@ -66,7 +66,8 @@
                     <ul class="list-group" id="peerList"></ul>
                     <form id="peerAddForm">
                         <div class="input-group">
-                            <input id="peerAddInp" type="text" class="form-control" placeholder="New peer address:port" required>
+                            <input id="peerAddInp" type="text" class="form-control" placeholder="New peer address:port"
+                                   required>
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-primary">Add</button>
                             </span>
@@ -116,13 +117,21 @@
                 <h4 class="modal-title">File upload</h4>
             </div>
             <div class="modal-body">
-                <form id="fileInfo">
-                    <input type="file" id="fileInput" name="files"/>
+                <form id="fileInfo" onsubmit="sendData()">
+                    <div class="input-group">
+                        <label class="input-group-btn">
+                            <span class="btn btn-primary">
+                                Browse&hellip; <input type="file" id="fileInput" style="display: none;">
+                            </span>
+                        </label>
+                        <input type="text" id="fileNamePlaceholder" class="form-control" readonly>
+                    </div>
+                    <br>
+                    <p>
+                        <button class="btn btn-danger" type="reset">Clear</button>
+                        <button class="btn btn-success" type="submit">Upload</button>
+                    </p>
                 </form>
-
-                <div class="progress">
-                    <div id="sendProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:0"></div>
-                </div>
             </div>
         </div>
     </div>

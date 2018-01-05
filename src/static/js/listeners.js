@@ -1,6 +1,9 @@
 "use strict";
 
-fileInput.addEventListener('change', sendData, false);
+fileInput.addEventListener('change', function() {
+    let fileName = fileInput.files[0].name;
+    $('#fileNamePlaceholder').val(fileName);
+}, false);
 
 $(document.body).on('click', '#hangUpBtn', function () {
     send({

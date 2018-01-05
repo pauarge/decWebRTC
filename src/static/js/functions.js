@@ -42,7 +42,6 @@ function sendData() {
                     if (file.size > offset + e.target.result.byteLength) {
                         window.setTimeout(sliceFile, 0, offset + chunkSize);
                     }
-                    $('#sendProgress').width(offset + e.target.result.byteLength);
                 };
             })(file);
             let slice = file.slice(offset, offset + chunkSize);
@@ -184,7 +183,7 @@ function call() {
 function handleReceivedData(e) {
     let currentTime = new Date();
     if (typeof e.data === 'object') {
-        receiveBuffer.push(event.data);
+        receiveBuffer.push(e.data);
         receivedSize += e.data.byteLength;
         if (receivedSize === currentFile.size) {
             let received = new window.Blob(receiveBuffer);
