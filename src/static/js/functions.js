@@ -28,6 +28,7 @@ function sendData() {
         log('File is ' + [file.name, file.size, file.type, file.lastModified].join(' '));
 
         if (file.size === 0) {
+            alert("File has size 0, could not upload it");
             return;
         }
 
