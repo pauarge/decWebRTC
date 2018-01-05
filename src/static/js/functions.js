@@ -22,30 +22,34 @@ function send(message) {
 
 function sendData() {
     let file = fileInput.files[0];
-    log('File is ' + [file.name, file.size, file.type, file.lastModified].join(' '));
+    if (!file) {
+        log('No file chosen');
+    } else {
+        log('File is ' + [file.name, file.size, file.type, file.lastModified].join(' '));
 
-    if (file.size === 0) {
-        return;
+        if (file.size === 0) {
+            return;
+        }
+
+        sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
+
+        let chunkSize = 16384;
+        let sliceFile = function (offset) {
+            let reader = new window.FileReader();
+            reader.onload = (function () {
+                return function (e) {
+                    sendChannel.send(e.target.result);
+                    if (file.size > offset + e.target.result.byteLength) {
+                        window.setTimeout(sliceFile, 0, offset + chunkSize);
+                    }
+                    $('#sendProgress').width(offset + e.target.result.byteLength);
+                };
+            })(file);
+            let slice = file.slice(offset, offset + chunkSize);
+            reader.readAsArrayBuffer(slice);
+        };
+        sliceFile(0);
     }
-
-    sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
-
-    let chunkSize = 16384;
-    let sliceFile = function (offset) {
-        let reader = new window.FileReader();
-        reader.onload = (function () {
-            return function (e) {
-                sendChannel.send(e.target.result);
-                if (file.size > offset + e.target.result.byteLength) {
-                    window.setTimeout(sliceFile, 0, offset + chunkSize);
-                }
-                $('#sendProgress').width(offset + e.target.result.byteLength);
-            };
-        })(file);
-        let slice = file.slice(offset, offset + chunkSize);
-        reader.readAsArrayBuffer(slice);
-    };
-    sliceFile(0);
 }
 
 function connect() {
@@ -330,15 +334,6 @@ function handleGetUserMediaError(e) {
     }
 
     handleLeave();
-}
-
-function handleFileInputChange() {
-    let file = fileInput.files[0];
-    if (!file) {
-        log('No file chosen');
-    } else {
-        sendData();
-    }
 }
 
 function handleScreenShare() {

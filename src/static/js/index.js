@@ -14,7 +14,8 @@ let mediaConstraints = {
 let screenConstraints = {
     video: {
         mediaSource: "screen", // whole screen sharing
-    }
+    },
+    audio: false
 };
 
 let localUsername = null;
