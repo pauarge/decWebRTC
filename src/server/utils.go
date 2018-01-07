@@ -67,7 +67,7 @@ func (g *Gossiper) addPeer(addr string) {
 			g.peers[addr] = true
 			g.peersLock.Unlock()
 			g.channelsLock.Lock()
-			g.channels[addr] = make(chan bool, 1)
+			g.channels[addr] = make(chan bool)
 			g.channelsLock.Unlock()
 			g.sendUserList()
 			log.Println("Added peer", addr)
