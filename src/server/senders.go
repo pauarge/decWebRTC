@@ -51,37 +51,24 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 	if err != nil {
 		log.Println(err)
 	} else {
+		ch := make(chan bool, 1)
+		g.channelsLock.Lock()
+		g.channels[address] = ch
+		g.channelsLock.Unlock()
+
 		addr, err := net.ResolveUDPAddr("udp4", address)
 		_, err = g.gossipConn.WriteToUDP(packetBytes, addr)
 		if err != nil {
 			log.Println(err)
 			g.deletePeer(address)
+			// TODO: Close channel
 		} else {
-			ch := make(chan bool)
-			g.channelsLock.Lock()
-			g.channels[address] = ch
-			g.channelsLock.Unlock()
-			ticker := time.NewTicker(time.Second * common.TimeOutSecs)
-			go func() {
-				for range ticker.C {
-					log.Println("Tick")
-					/*g.channelsLock.RLock()
-					if ch, ok := g.channels[address]; ok {
-						ch <- true
-						log.Println("Timeout on mongering with ", address)
-						g.deletePeer(address)
-					}
-					g.channelsLock.RUnlock()*/
-					ticker.Stop()
-				}
-			}()
-
-			//_ = <-ch
-			//log.Println("Wait channel unlocked for", address)
-
-			g.channelsLock.Lock()
-			delete(g.channels, address)
-			g.channelsLock.Unlock()
+			select {
+			case _ = <-ch:
+				log.Println("GOT IT")
+			case <-time.After(time.Second * common.TimeOutSecs):
+				log.Println("Timeout on mongering")
+			}
 		}
 	}
 	log.Println("Finished mongering to", address)
