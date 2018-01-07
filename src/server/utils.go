@@ -73,18 +73,19 @@ func (g *Gossiper) addPeer(addr string) {
 }
 
 func (g *Gossiper) deletePeer(addr string) {
-	defer g.peersLock.Unlock()
-	defer g.nextHopLock.Unlock()
-	defer g.wantLock.Unlock()
 	g.peersLock.Lock()
-	g.nextHopLock.Lock()
-	g.wantLock.Lock()
-
 	delete(g.peers, addr)
-	delete(g.nextHop, addr)
-	delete(g.want, addr)
-	g.sendUserList()
+	g.peersLock.Unlock()
 
+	g.nextHopLock.Lock()
+	delete(g.nextHop, addr)
+	g.nextHopLock.Unlock()
+
+	g.wantLock.Lock()
+	delete(g.want, addr)
+	g.wantLock.Unlock()
+
+	g.sendUserList()
 	log.Println("Delted peer", addr)
 }
 
