@@ -76,6 +76,6 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 func (g *Gossiper) iterativeRumorMongering(exclude string, msg common.RumorMessage) {
 	peers := g.getPeerList(exclude)
 	for i := range peers {
-		g.rumorMongering(peers[i], msg)
+		go g.rumorMongering(peers[i], msg)
 	}
 }
