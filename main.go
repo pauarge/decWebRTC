@@ -12,7 +12,7 @@ func main() {
 	namePtr := flag.String("name", "", "Name of the node")
 	peersPtr := flag.String("peers", "", "List of peers")
 	rtimerPtr := flag.Int("rtimer", common.DefaultRTimer, "How many seconds the peer waits between two "+
-		"route rumor messagese conds for rtimer")
+		"route rumor messages")
 	disableGuiPtr := flag.Bool("disableGui", false, "Disable GUI")
 	flag.Parse()
 
