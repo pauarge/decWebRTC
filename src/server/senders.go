@@ -63,26 +63,28 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			ticker := time.NewTicker(time.Second * common.TimeOutSecs)
 			go func() {
 				for range ticker.C {
-					g.channelsLock.RLock()
+					log.Println("Tick")
+					/*g.channelsLock.RLock()
 					if ch, ok := g.channels[address]; ok {
 						ch <- true
 						log.Println("Timeout on mongering with ", address)
 						g.deletePeer(address)
 					}
-					g.channelsLock.RUnlock()
-					return
+					g.channelsLock.RUnlock()*/
+					ticker.Stop()
 				}
 			}()
-			g.channelsLock.RLock()
+			/*g.channelsLock.RLock()
 			ch := g.channels[address]
 			g.channelsLock.RUnlock()
-			_ = <-ch
-			ticker.Stop()
+			_ = <-ch*/
+
 			g.channelsLock.Lock()
 			delete(g.channels, address)
 			g.channelsLock.Unlock()
 		}
 	}
+	log.Println("Finished mongering to", address)
 }
 
 func (g *Gossiper) iterativeRumorMongering(exclude string, msg common.RumorMessage) {

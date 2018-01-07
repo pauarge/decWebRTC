@@ -1,7 +1,7 @@
 package common
 
 const BufferSize = 8192
-const DefaultRTimer = 5
+const DefaultRTimer = 10
 const GossipPort = 5000
 const GuiPort = 8080
 const LongTimeOutSecs = 10
