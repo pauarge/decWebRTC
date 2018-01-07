@@ -10,12 +10,14 @@ import (
 )
 
 type Gossiper struct {
+	channels     map[string]chan bool
 	counter      uint32
 	name         string
 	gossipConn   *net.UDPConn
 	nextHop      map[string]*net.UDPAddr
 	peers        map[string]bool
 	want         map[string]uint32
+	channelsLock *sync.RWMutex
 	nextHopLock  *sync.RWMutex
 	peersLock    *sync.RWMutex
 	wantLock     *sync.RWMutex
@@ -35,12 +37,14 @@ func NewGossiper(gossipPort int, name, peers string) *Gossiper {
 		log.Fatal(err)
 	}
 	return &Gossiper{
+		channels:     make(map[string]chan bool),
 		counter:      1,
 		name:         name,
 		gossipConn:   gossipConn,
 		nextHop:      make(map[string]*net.UDPAddr),
 		peers:        parsePeerSet(peers),
 		want:         make(map[string]uint32),
+		channelsLock: &sync.RWMutex{},
 		nextHopLock:  &sync.RWMutex{},
 		peersLock:    &sync.RWMutex{},
 		wantLock:     &sync.RWMutex{},
