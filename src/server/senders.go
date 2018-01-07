@@ -57,8 +57,9 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			log.Println(err)
 			g.deletePeer(address)
 		} else {
+			ch := make(chan bool)
 			g.channelsLock.Lock()
-			g.channels[address] = make(chan bool)
+			g.channels[address] = ch
 			g.channelsLock.Unlock()
 			ticker := time.NewTicker(time.Second * common.TimeOutSecs)
 			go func() {
@@ -74,12 +75,9 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 					ticker.Stop()
 				}
 			}()
-			g.channelsLock.RLock()
-			ch := g.channels[address]
-			g.channelsLock.RUnlock()
-			_ = <-ch
 
-			log.Println("Wait channel unlocked for", address)
+			//_ = <-ch
+			//log.Println("Wait channel unlocked for", address)
 
 			g.channelsLock.Lock()
 			delete(g.channels, address)

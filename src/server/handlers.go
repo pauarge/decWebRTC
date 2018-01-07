@@ -9,10 +9,11 @@ import (
 
 func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAddr) {
 	relayStr := getRelayStr(relay)
+	log.Println("Got status packet from", relayStr)
 
 	g.channelsLock.RLock()
 	if ch, ok := g.channels[relayStr]; ok {
-		log.Println("Got monger reply from", relayStr)
+		log.Println("Unlocked channel")
 		ch <- true
 	}
 	g.channelsLock.RUnlock()
