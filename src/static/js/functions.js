@@ -33,6 +33,7 @@ function sendData() {
         }
 
         sendChannel.send(JSON.stringify({'name': file.name, 'size': file.size, 'type': file.type}));
+        $('#fileInfo')[0].reset();
 
         let chunkSize = 16384;
         let sliceFile = function (offset) {
