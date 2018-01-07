@@ -51,10 +51,9 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 	if err != nil {
 		log.Println(err)
 	} else {
-		ch := make(chan bool, 1)
-		g.channelsLock.Lock()
-		g.channels[address] = ch
-		g.channelsLock.Unlock()
+		g.channelsLock.RLock()
+		ch := g.channels[address]
+		g.channelsLock.RUnlock()
 
 		addr, err := net.ResolveUDPAddr("udp4", address)
 		_, err = g.gossipConn.WriteToUDP(packetBytes, addr)
@@ -70,10 +69,6 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 			log.Println("Timeout on mongering")
 			g.deletePeer(address)
 		}
-		log.Println("Deleting channel of", address)
-		g.channelsLock.Lock()
-		delete(g.channels, address)
-		g.channelsLock.Unlock()
 	}
 	log.Println("Finished mongering to", address)
 }

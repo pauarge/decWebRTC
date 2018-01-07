@@ -11,8 +11,8 @@ import (
 	"github.com/pauarge/decWebRTC/src/common"
 )
 
-func parsePeerSet(peers string) map[string]bool {
-	peerSet := make(map[string]bool)
+func parsePeerSet(peers string) []string {
+	var peerSet []string
 	if last := len(peers) - 1; last >= 0 {
 		if peers[last] == ',' {
 			peers = peers[:last]
@@ -22,7 +22,7 @@ func parsePeerSet(peers string) map[string]bool {
 			if err != nil {
 				log.Fatal(err)
 			}
-			peerSet[i] = true
+			peerSet = append(peerSet, i)
 		}
 	}
 	return peerSet
@@ -63,11 +63,14 @@ func (g *Gossiper) addPeer(addr string) {
 		if err != nil {
 			log.Println("Peer unreachable:", err)
 		} else {
-			log.Println("Added peer", addr)
 			g.peersLock.Lock()
 			g.peers[addr] = true
 			g.peersLock.Unlock()
+			g.channelsLock.Lock()
+			g.channels[addr] = make(chan bool, 1)
+			g.channelsLock.Unlock()
 			g.sendUserList()
+			log.Println("Added peer", addr)
 		}
 	}
 }

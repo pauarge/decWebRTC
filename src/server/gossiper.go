@@ -36,13 +36,13 @@ func NewGossiper(gossipPort int, name, peers string) *Gossiper {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Gossiper{
+	g := &Gossiper{
 		channels:     make(map[string]chan bool),
 		counter:      1,
 		name:         name,
 		gossipConn:   gossipConn,
 		nextHop:      make(map[string]*net.UDPAddr),
-		peers:        parsePeerSet(peers),
+		peers:        make(map[string]bool),
 		want:         make(map[string]uint32),
 		channelsLock: &sync.RWMutex{},
 		nextHopLock:  &sync.RWMutex{},
@@ -50,6 +50,10 @@ func NewGossiper(gossipPort int, name, peers string) *Gossiper {
 		wantLock:     &sync.RWMutex{},
 		sockLock:     &sync.RWMutex{},
 	}
+	for _, p := range parsePeerSet(peers) {
+		g.addPeer(p)
+	}
+	return g
 }
 
 func (g *Gossiper) Start(guiPort, rtimer int, disableGui bool) {
