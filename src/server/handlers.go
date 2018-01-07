@@ -11,11 +11,11 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 	relayStr := getRelayStr(relay)
 	log.Println("Got status packet from", relayStr)
 
-	g.channelsLock.RLock()
+	/*g.channelsLock.RLock()
 	if ch, ok := g.channels[relayStr]; ok {
 		ch <- true
 	}
-	g.channelsLock.RUnlock()
+	g.channelsLock.RUnlock()*/
 
 	remoteWant := parseWant(msg)
 	g.wantLock.RLock()

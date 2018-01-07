@@ -5,7 +5,6 @@ import (
 	"log"
 	"github.com/dedis/protobuf"
 	"github.com/pauarge/decWebRTC/src/common"
-	"time"
 )
 
 func (g *Gossiper) sendStatusPacket(relay *net.UDPAddr) {
@@ -51,24 +50,24 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 	if err != nil {
 		log.Println(err)
 	} else {
-		g.channelsLock.RLock()
+		/*g.channelsLock.RLock()
 		ch := g.channels[address]
-		g.channelsLock.RUnlock()
+		g.channelsLock.RUnlock()*/
 
 		addr, err := net.ResolveUDPAddr("udp4", address)
 		_, err = g.gossipConn.WriteToUDP(packetBytes, addr)
 		if err != nil {
 			log.Println(err)
 			g.deletePeer(address)
-			ch <- true
+			//ch <- true
 		}
-		select {
+		/*select {
 		case _ = <-ch:
 			log.Println("Unlocked channel")
 		case <-time.After(time.Second * common.TimeOutSecs):
 			log.Println("Timeout on mongering")
 			g.deletePeer(address)
-		}
+		}*/
 	}
 	log.Println("Finished mongering to", address)
 }

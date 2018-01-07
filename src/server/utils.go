@@ -66,9 +66,9 @@ func (g *Gossiper) addPeer(addr string) {
 			g.peersLock.Lock()
 			g.peers[addr] = true
 			g.peersLock.Unlock()
-			g.channelsLock.Lock()
+			/*g.channelsLock.Lock()
 			g.channels[addr] = make(chan bool)
-			g.channelsLock.Unlock()
+			g.channelsLock.Unlock()*/
 			g.sendUserList()
 			log.Println("Added peer", addr)
 		}
@@ -88,9 +88,9 @@ func (g *Gossiper) deletePeer(addr string) {
 	delete(g.want, addr)
 	g.wantLock.Unlock()
 
-	g.channelsLock.Lock()
+	/*g.channelsLock.Lock()
 	delete(g.channels, addr)
-	g.channelsLock.Unlock()
+	g.channelsLock.Unlock()*/
 
 	g.sendUserList()
 	log.Println("Delted peer", addr)
