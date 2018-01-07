@@ -74,10 +74,12 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 					ticker.Stop()
 				}
 			}()
-			/*g.channelsLock.RLock()
+			g.channelsLock.RLock()
 			ch := g.channels[address]
 			g.channelsLock.RUnlock()
-			_ = <-ch*/
+			_ = <-ch
+
+			log.Println("Wait channel unlocked for", address)
 
 			g.channelsLock.Lock()
 			delete(g.channels, address)
