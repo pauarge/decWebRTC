@@ -61,15 +61,19 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 		if err != nil {
 			log.Println(err)
 			g.deletePeer(address)
-			// TODO: Close channel
-		} else {
-			select {
-			case _ = <-ch:
-				log.Println("GOT IT")
-			case <-time.After(time.Second * common.TimeOutSecs):
-				log.Println("Timeout on mongering")
-			}
+			ch <- true
 		}
+		select {
+		case _ = <-ch:
+			log.Println("GOT IT")
+		case <-time.After(time.Second * common.TimeOutSecs):
+			log.Println("Timeout on mongering")
+			g.deletePeer(address)
+		}
+		log.Println("Deleting channel of", address)
+		g.channelsLock.Lock()
+		delete(g.channels, address)
+		g.channelsLock.Unlock()
 	}
 	log.Println("Finished mongering to", address)
 }
