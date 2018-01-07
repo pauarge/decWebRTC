@@ -13,7 +13,6 @@ func (g *Gossiper) handleStatusPacket(msg common.StatusPacket, relay *net.UDPAdd
 
 	g.channelsLock.RLock()
 	if ch, ok := g.channels[relayStr]; ok {
-		log.Println("Unlocked channel")
 		ch <- true
 	}
 	g.channelsLock.RUnlock()

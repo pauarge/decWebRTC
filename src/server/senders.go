@@ -64,7 +64,7 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 		}
 		select {
 		case _ = <-ch:
-			log.Println("GOT IT")
+			log.Println("Unlocked channel")
 		case <-time.After(time.Second * common.TimeOutSecs):
 			log.Println("Timeout on mongering")
 			g.deletePeer(address)

@@ -88,6 +88,10 @@ func (g *Gossiper) deletePeer(addr string) {
 	delete(g.want, addr)
 	g.wantLock.Unlock()
 
+	g.channelsLock.Lock()
+	delete(g.channels, addr)
+	g.channelsLock.Unlock()
+
 	g.sendUserList()
 	log.Println("Delted peer", addr)
 }
