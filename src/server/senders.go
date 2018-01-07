@@ -67,6 +67,7 @@ func (g *Gossiper) rumorMongering(address string, msg common.RumorMessage) {
 					if ch, ok := g.channels[address]; ok {
 						ch <- true
 						log.Println("Timeout on mongering with ", address)
+						g.deletePeer(address)
 					}
 					g.channelsLock.RUnlock()
 					return
