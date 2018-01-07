@@ -47,11 +47,11 @@ document.getElementById("message").addEventListener('keypress', function (e) {
 });
 
 $('#peerListCollapse').on('hidden.bs.collapse', function () {
-    $('#peerListCollapseLaunch').text("Display known peers");
+    $('#peerListCollapseLaunch').text("Show advanced options");
 });
 
 $('#peerListCollapse').on('show.bs.collapse', function () {
-    $('#peerListCollapseLaunch').text("Hide known peers");
+    $('#peerListCollapseLaunch').text("Hide advanced options");
 });
 
 $('#chathead').click(function () {

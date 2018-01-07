@@ -4,6 +4,7 @@
     <title>Decentralized WebRTC</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/bootstrap-toggle.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -60,9 +61,11 @@
             <div class="modal-body">
                 <p>Here's a list of all available users. Click on one of them to start a call.</p>
                 <div class="list-group" id="availableUsersList"></div>
-                <p><a href="#" data-toggle="collapse" data-target="#peerListCollapse" id="peerListCollapseLaunch">Display
-                    known peers</a></p>
+                <p><a href="#" data-toggle="collapse" data-target="#peerListCollapse" id="peerListCollapseLaunch">Show advanced options</a></p>
                 <div id="peerListCollapse" class="collapse">
+                    <hr>
+                    <h4>Known Peers</h4>
+                    <p>Here's a list of known peers (IP:Port). Add new peers with the form below.</p>
                     <ul class="list-group" id="peerList"></ul>
                     <form id="peerAddForm">
                         <div class="input-group">
@@ -74,6 +77,15 @@
                         </div>
                         <label for="newPeer"></label>
                     </form>
+                    <hr>
+                    <h4>TURN</h4>
+                    <p>Enable TURN support (the client will look for TURN relays in other nodes of the network in port 3478).</p>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-toggle="toggle">
+                            Enable/disable TURN
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,6 +152,7 @@
 <script src="lib/adapter.min.js"></script>
 <script src="lib/jquery-3.2.1.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>
+<script src="lib/bootstrap-toggle.min.js"></script>
 
 <script src="js/functions.js"></script>
 <script src="js/listeners.js"></script>
