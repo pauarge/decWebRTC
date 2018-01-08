@@ -7,6 +7,7 @@ let receiveChannel = null;
 
 let wsAddr = "wss://127.0.0.1:8080/echo";
 let iceServersUrls = [];
+let turnEnabled = false;
 let mediaConstraints = {
     video: true,
     audio: false
@@ -28,6 +29,7 @@ let fileInput = document.querySelector('input#fileInput');
 let receiveBuffer = [];
 let receivedSize = 0;
 let currentFile = null;
+let sharingScreen = false;
 
 $(document).ready(function () {
     connect();

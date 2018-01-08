@@ -25,7 +25,7 @@
             </button>
             <button id="screenShareLaunch" class="btn-success btn" onclick="handleScreenShare()" disabled>
                 <span class="glyphicon glyphicon-blackboard"></span>
-                Share screen
+                <span id="shareScreenLaunchText">Share screen</span>
             </button>
             <button id="sendFileLaunch" data-toggle="modal" data-target="#fileUploadModal" class="btn-primary btn"
                     disabled>
@@ -82,7 +82,7 @@
                     <p>Enable TURN support (the client will look for TURN relays in other nodes of the network in port 3478).</p>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" data-toggle="toggle">
+                            <input id="turnToggle" type="checkbox" data-toggle="toggle">
                             Enable/disable TURN
                         </label>
                     </div>

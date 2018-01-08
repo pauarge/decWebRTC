@@ -1,6 +1,6 @@
 "use strict";
 
-fileInput.addEventListener('change', function() {
+fileInput.addEventListener('change', function () {
     let fileName = fileInput.files[0].name;
     $('#fileNamePlaceholder').val(fileName);
 }, false);
@@ -14,7 +14,7 @@ $(document.body).on('click', '#hangUpBtn', function () {
 
 $(document.body).on('click', '.callLaunch', function (e) {
     targetUsername = $(this).data('user');
-    initMedia(function() {
+    initMedia(function () {
         $('#callingName').text(targetUsername);
         $('.modal').modal('hide');
         $('#callingModal').modal('show');
@@ -66,4 +66,14 @@ $('#peerAddForm').submit(function (e) {
         newPeer: newPeer
     });
     $("#peerAddInp").val("");
+});
+
+$('#turnToggle').change(function () {
+    if ($(this).prop('checked')) {
+        turnEnabled = true;
+        log("TURN enabled");
+    } else {
+        turnEnabled = false;
+        log("TURN disabled");
+    }
 });

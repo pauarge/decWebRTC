@@ -294,6 +294,9 @@ function handleLeave() {
     peerConnection.onicecandidate = null;
     peerConnection.ontrack = null;
 
+    sharingScreen = false;
+    $('#shareScreenLaunchText').text("Share screen");
+
     $('#feed').empty();
     $('#togglearea').slideUp();
 
@@ -343,11 +346,23 @@ function handleGetUserMediaError(e) {
 }
 
 function handleScreenShare() {
-    navigator.mediaDevices.getUserMedia(screenConstraints)
-        .then(function (myStream) {
-            peerConnection.getSenders()[0].replaceTrack(myStream.getVideoTracks()[0]);
-            $('#screenShareLaunch').prop('disabled', true);
-            localVideo.srcObject = myStream;
-        })
-        .catch(handleGetUserMediaError);
+    if (sharingScreen) {
+        navigator.mediaDevices.getUserMedia(mediaConstraints)
+            .then(function (myStream) {
+                peerConnection.getSenders()[0].replaceTrack(myStream.getVideoTracks()[0]);
+                $('#shareScreenLaunchText').text("Share screen");
+                localVideo.srcObject = myStream;
+                sharingScreen = false;
+            })
+            .catch(handleGetUserMediaError);
+    } else {
+        navigator.mediaDevices.getUserMedia(screenConstraints)
+            .then(function (myStream) {
+                peerConnection.getSenders()[0].replaceTrack(myStream.getVideoTracks()[0]);
+                $('#shareScreenLaunchText').text("Stop sharing screen");
+                localVideo.srcObject = myStream;
+                sharingScreen = true;
+            })
+            .catch(handleGetUserMediaError);
+    }
 }
