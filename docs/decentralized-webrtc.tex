@@ -24,11 +24,11 @@
 
 \begin{document}
 
-\maketitle % Print the title
+\maketitle
 
 \section{Introduction}
 
-WebRTC\footnote{\url{https://www.w3.org/TR/2017/CR-webrtc-20171102/}} is an open standard that enables encrypted\footnote{\url{http://www.ietf.org/proceedings/82/slides/rtcweb-13.pdf}}, multi-platform, plugin-less peer-to-peer video, audio and data (text and files) communication using web technologies (HTML5 and JS APIs built-in the browser). 
+WebRTC\footnote{\url{https://www.w3.org/TR/2017/CR-webrtc-20171102/}} is an open standard that enables encrypted, multi-platform, plugin-less peer-to-peer video, audio and data (text and files) communication using web technologies (HTML5 and JS APIs built-in the browser). 
 
 Although media transmission is done entirely peer-to-peer, there are three main components of a WebRTC call that still require a centralized system: signaling, STUN and TURN\footnote{A more complex WebRTC setup might require more components.}.
 
@@ -49,17 +49,17 @@ To showcase that using a fully decentralized WebRTC implementation is feasible, 
 
 \section{WebRTC Components}
 
-In this section a brief explanation of each relevant (for this project) WebRTC component is given. There's no explicit explanation on the browser APIs because for the scope of this project, they will be used in a standard way (although Mozilla's web docs\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API}} are a great place to start for getting information). 
+In this section a brief explanation of each relevant (for this project) WebRTC component is given. There is no explicit explanation on the browser APIs because for the scope of this project, they will be used in a standard way (although Mozilla's web docs\footnote{\url{https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API}} are a great place to start for getting information). 
 
 \subsection{Signaling}
 
-The basic idea of signaling is that peers have to exchange  metadata before starting the call, so they can agree on parameters such as video resolution or codecs. The classic WebRTC flow is illustrated in figure 2.1. This offer/answer schema sends packets in Session Description Protocol (SDP)\footnote{\url{https://tools.ietf.org/html/rfc4566}} format.
+The basic idea of signaling is that peers have to exchange  metadata before starting the call, so they can locate each other and agree on parameters such as video resolution or codecs. The classic WebRTC flow is illustrated in figure 3.1. This offer/answer schema sends packets in Session Description Protocol (SDP)\footnote{\url{https://tools.ietf.org/html/rfc4566}} format.
 
 Signaling is not explicitly defined in the WebRTC standard, so each system decides which kind of implementation uses. The only requirement is that the system is able to transmit messages between peers. Usually, it is implemented using Websockets, but a lot of alternatives are already available\footnote{\url{https://github.com/muaz-khan/WebRTC-Experiment/blob/master/Signaling.md}}.
 
-When the two peers have agreed on the session parameters, they start looking for direct communication path alternatives, \textit{candidates}, for establishing the connection. Those candidates typically include a connection type (TCP or UDP), an IP (local or public) and a port. The gathering and negotiation of candidates is done using the ICE Framework\footnote{\url{https://tools.ietf.org/html/rfc5245}}. Out of the given candidates, ICE chooses the shortest and most efficient path.
+When peers have agreed on the session parameters, they start looking for direct communication path alternatives, \textit{candidates}, for establishing the connection. Those candidates typically include a connection type (TCP or UDP), an IP (local or public) and a port. The gathering and negotiation of candidates is done using the ICE Framework\footnote{\url{https://tools.ietf.org/html/rfc5245}}. Out of the given candidates, ICE chooses the shortest and most efficient path.
 
-If correctly implemented, this signaling schema suffices the requirements for a connection between two devices in the same network. In the real world, that is not likely the case and NATs and firewalls are present, so then STUN and TURN are needed.
+If correctly implemented, this signaling schema suffices the requirements for a connection between two devices in the same network. In the real world, that is not likely the case and NATs and firewalls are present, then STUN and TURN are needed.
 
 \begin{figure}[ht!]
 	\centering
@@ -69,7 +69,7 @@ If correctly implemented, this signaling schema suffices the requirements for a 
 
 \subsection{STUN server}
 
-A Session Traversal Utilities for NAT (STUN\footnote{\url{https://tools.ietf.org/html/rfc5389}}) server is a service that provides a tool for hosts to discover the presence of a NAT, and to discover the mapped, usually public, IP address and port number that the NAT has allocated for the application's flows to remote hosts. This service basically checks the IP:port of an incoming request and responds that combination back.
+A Session Traversal Utilities for NAT (STUN\footnote{\url{https://tools.ietf.org/html/rfc5389}}) server is a service that provides a tool for hosts to discover the presence of a NAT, and to discover the mapped, usually public, IP address and port number that the NAT has allocated for the application's flows to remote hosts. This service basically checks the \verb|IP:port| of an incoming request and responds that combination back.
 
 On the gathering candidates process of ICE, STUN servers will be used to gather the public IP and port of the device, so it can be accessed from outside the local network (otherwise ICE would only provide local directions).
 
