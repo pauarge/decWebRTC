@@ -126,14 +126,18 @@ function initMedia(callback) {
         .then(function (myStream) {
             localVideo.srcObject = myStream;
 
-            let RTCConfig = {
-                iceServers: [
-                    {
-                        urls: iceServersUrls
-                        //urls: 'stun:stun.l.google.com:19302'
-                    },
-                ]
-            };
+            let RTCConfig;
+
+            if (turnEnabled) {
+                RTCConfig = {
+                    iceServers: [{urls: iceServersUrls}, {urls: turnServersUrls}]
+                };
+            } else {
+                RTCConfig = {
+                    iceServers: [{urls: iceServersUrls}]
+                };
+            }
+
 
             peerConnection = new RTCPeerConnection(RTCConfig);
             peerConnection.addStream(myStream);
@@ -313,6 +317,7 @@ function handleUsers(users, peers) {
     $('#availableUsersList').empty();
     $('#peerList').empty();
     iceServersUrls = [];
+    turnServersUrls = [];
     for (let i in users) {
         $('#availableUsersList')
             .append('<a href="#" class="list-group-item callLaunch" data-user="' + users[i] + '">' + users[i] + '</a>');
@@ -320,8 +325,10 @@ function handleUsers(users, peers) {
     for (let i in peers) {
         let IP = peers[i].split(":")[0];
         if (!isPrivateIP(IP)) {
-            let addr = "stun:" + IP + ":3478";
-            iceServersUrls.push(addr);
+            let addrStun = "stun:" + IP + ":3478";
+            let addrTurn = "turn:" + IP + ":3478";
+            iceServersUrls.push(addrStun);
+            turnServersUrls.push(addrTurn);
         }
         $('#peerList').append('<li class="list-group-item">' + peers[i] + '</li>');
     }

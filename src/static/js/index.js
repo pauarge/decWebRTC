@@ -7,6 +7,7 @@ let receiveChannel = null;
 
 let wsAddr = "wss://127.0.0.1:8080/echo";
 let iceServersUrls = [];
+let turnServersUrls = [];
 let turnEnabled = false;
 let mediaConstraints = {
     video: true,
