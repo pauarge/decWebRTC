@@ -287,6 +287,7 @@ Although the Gossip network is based in the Peerster implementation done in clas
 	\item \textbf{Not storing messages}. Since rumors no longer contain information, they are not stored. In case someone requests them, they can be reconstructed (they only contain \verb|LastIP| and \verb|LastPort| which are stored for every peer in an internal data structure).
 	\item \textbf{Rumor messages, private messages and file sharing removed}. All these user-faced features are now removed, since they are replaced (except for rumor messages) by better WebRTC-based implementations.
 	\item \textbf{CLI removed}. All UX is now focused in the GUI, so the CLI is removed as well. The UDP listener needed for it is removed as well.
+	\item \textbf{Peer propagation}. If it is reachable, the direction contained in \verb|LastIP| and \verb|LastPort| will be added to the known peers list.
 	\item \textbf{Peer deletion}. When a peer cannot be reached (directly or indirectly), is now deleted from the known peers, with all of its related known data.
 	\item \textbf{Listen to all directions}. Instead of binding the UDP listener to an IP and a port, now it's binded to \verb|0.0.0.0:port|.
 \end{enumerate}
